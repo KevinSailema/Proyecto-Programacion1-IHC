@@ -1,4 +1,5 @@
 #include <iostream>
+<<<<<<< HEAD
 #include <fstream>
 #include <vector>
 #include <string>
@@ -94,3 +95,6 @@ int main() {
 
     return 0;
 }
+=======
+using namespace std;
+>>>>>>> 04ec46d5ad3480b0b0bc9826251838f86d5c36f0
