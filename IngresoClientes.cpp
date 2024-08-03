@@ -1,8 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <unistd.h>
 using namespace std;
-
+void titulo(){
+    cout<<"*****************************************************************"<<endl;
+    cout<<"*    Bienvenido al sistema de gestion de tarjetas de credito    *"<<endl;
+    cout<<"*****************************************************************"<<endl;
+}
 int imprimir_opciones(string tipo1, string tipo2, string tipo3, string tipo4, string tipo5){
     int n;
     cout << "\n1. " << tipo1 << endl;
@@ -73,7 +78,8 @@ void consultar_cliente(){
     cout<<"******************"<<endl;
     cout<<"CONSULTAR CLIENTE"<<endl;
     cout<<"******************"<<endl;
-    long long int cedula;
+    long long int cedula, tarjeta_adicional;
+    int cvc_adicional;
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
@@ -82,19 +88,20 @@ void consultar_cliente(){
         cout<<endl;
     }
     ifstream archivo("CRUD.csv");
-    if(archivo.is_open()){
+    ofstream archivo_temp("temp.csv");
+    if(archivo.is_open() && archivo_temp.is_open()){
         string linea;
         bool encontrado;
-        string partes[6];
+        string partes[5];
         while(getline(archivo, linea)){
-                size_t start = 0, end = 0;
-                for (int i = 0; i < 5; i++) {
-                    end = linea.find(';', start);
-                    if (end == string::npos) end = linea.length();
-                    partes[i] = linea.substr(start, end - start);
-                    start = end + 1;
-                }
-                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6];
+            size_t start = 0, end = 0;
+            for (int i = 0; i < 5; i++) {
+                end = linea.find(';', start);
+                if (end == string::npos) end = linea.length();
+                partes[i] = linea.substr(start, end - start);
+                start = end + 1;
+            }
+                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
             if(linea.find(to_string(cedula))!=string::npos){ //Cuando encuentra la cedula, imprime la linea en donde la encontró
                 cout<<"Cliente encontrado: ";
                 cout<<partes[0]<<" "<<partes[1]<<" / "<<partes[2]<<endl;
@@ -103,20 +110,61 @@ void consultar_cliente(){
         }
         if(!encontrado){ //Si no encuentra la cedula, imprime que no se encontró
             cout<<"Cliente no encontrado"<<endl;
+            exit(1);
         }
         int n;
+        do{
+        cout<<endl;
+        cout<<"*************************"<<endl;
+        cout<<"Visualizacion de tarjetas"<<endl;
+        cout<<"*************************"<<endl;
         cout<<"1. Ver tarjetas registradas"<<endl;
-        cout<<"2. Ingresar nueva tarjeta"<<endl;
-        switch (n)
-        {
+        cout<<"2. Ingresar tarjeta adicional"<<endl;
+        cout<<"3. Salir al Menu Principal"<<endl;
+        cout<<"Ingrese la opcion deseada"<<endl;
+        cin>>n;
+            switch(n){
         case 1:
-            /* code */
+            cout<<"Tarjetas registradas: "<<endl;
+            cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
+            if(tarjeta_adicional!=0){
+                cout<<"Numero de tarjeta adicional: "<<tarjeta_adicional<<endl;
+            }
             break;
-        
+        case 2:
+            cout<<"Ingrese el numero de la tarjeta adicicional: ";
+            cin>>tarjeta_adicional;
+            while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
+                cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+                cin>>tarjeta_adicional;
+            }
+            cout<<"Ingrese el CVC de la tarjeta adicional: ";
+            cin>>cvc_adicional;    
+            while(cvc_adicional>=1000 || cvc_adicional<100){
+                cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                cin>>cvc_adicional;
+            }
+            cout<<"Tarjeta adicional ingresada con exito"<<endl;
+            archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<tarjeta_adicional<<";"<<cvc_adicional<<endl;
+            break;
+        case 3:
+            for(int i=0;i<3;i++){
+                cout<<"Saliendo en "<<3-i<<endl;
+                sleep(1.5);
+            }
+            cout<<"Regresando al menu principal"<<endl;
+            sleep(1.5);
+            cout<<endl;
+            break;
         default:
+            cout<<"Opcion no valida"<<endl;
             break;
         }
+        } while (n!=3);
         archivo.close();
+        archivo_temp.close();
+        remove("CRUD.csv");
+        rename("temp.csv","CRUD.csv");
 }
 }
 
@@ -142,22 +190,22 @@ void actualizar_datos(string campo, int campo_num){
         while (getline(archivo, linea)){
             size_t pos = linea.find(to_string(cedula));
             if (pos != string::npos){
-                cin.ignore();
-                cout << "Ingrese " << campo << " a actualizar: ";
-                getline(cin, reemplazar);
-                encontrado = true;
-                string partes[6];
-                size_t start = 0, end = 0;
-                for (int i = 0; i < 5; i++) {
-                    end = linea.find(';', start);
-                    if (end == string::npos) end = linea.length();
-                    partes[i] = linea.substr(start, end - start);
-                    start = end + 1;
-                }
+            cin.ignore();                
+            cout << "Ingrese " << campo << " a actualizar: ";
+            getline(cin, reemplazar);
+            encontrado = true;
+            string partes[5];
+            size_t start = 0, end = 0;
+            for (int i = 0; i < 5; i++) {
+                end = linea.find(';', start);
+                if (end == string::npos) end = linea.length();
+                partes[i] = linea.substr(start, end - start);
+                start = end + 1;
+               }
                 partes[campo_num] = reemplazar;
-                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6];
-            }
-            archivo_temp << linea << endl;
+                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
+          }
+          archivo_temp << linea << endl;
         }
         archivo.close();
         archivo_temp.close();
@@ -244,6 +292,7 @@ int main(){
     crear_archivo();
     do
     {
+        titulo();
         n = imprimir_opciones("Ingresar cliente nuevo", "Consultar cliente", "Actualizar cliente", "Eliminar cliente", "Salir del programa");
         switch (n)
         {
