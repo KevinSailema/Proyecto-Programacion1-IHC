@@ -14,7 +14,7 @@ int imprimir_opciones(string tipo1, string tipo2, string tipo3, string tipo4, st
     return n;
 }
 
-//ingreso de cliente
+//Ingreso de cliente
 void ingreso_cliente(){
     cout<<"********************"<<endl;
     cout<<"INGRESO DE CLIENTES"<<endl;
@@ -38,6 +38,10 @@ void ingreso_cliente(){
         }
         cout<<"Ingrese el número de la tarjeta: ";
         cin>>numero_tarjeta;
+        while(numero_tarjeta<=1000000000000000||numero_tarjeta>=10000000000000000){
+            cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+            cin>>numero_tarjeta;
+        }
         cout<<"Ingrese el CVC de la tarjeta: ";
         cin>>cvc;
         while (cvc>=1000 || cvc<100){
@@ -52,11 +56,11 @@ void ingreso_cliente(){
     }
 }
 
-//crear archivo
+//Crear archivo
 void crear_archivo(){
     ofstream archivo("CRUD.csv",ios::app);
     if(archivo.is_open()){
-        cout << "Archivo creado correctamente" << endl;
+        cout << "\nArchivo creado correctamente" << endl;
         archivo.close();
     }else{
         cout << "Error al crear el archivo" << endl;
@@ -64,72 +68,141 @@ void crear_archivo(){
   }
 }
 
+//Consultar cliente
+void consultar_cliente(){
+    cout<<"******************"<<endl;
+    cout<<"CONSULTAR CLIENTE"<<endl;
+    cout<<"******************"<<endl;
+    long long int cedula;
+    cout<<"Ingrese la cedula del cliente a consultar: ";
+    cin>>cedula;
+    while(cedula<=100000000||cedula>=2500000000){
+        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cin>>cedula;
+        cout<<endl;
+    }
+    ifstream archivo("CRUD.csv");
+    if(archivo.is_open()){
+        string linea;
+        bool encontrado;
+        string partes[6];
+        while(getline(archivo, linea)){
+                size_t start = 0, end = 0;
+                for (int i = 0; i < 5; i++) {
+                    end = linea.find(';', start);
+                    if (end == string::npos) end = linea.length();
+                    partes[i] = linea.substr(start, end - start);
+                    start = end + 1;
+                }
+                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6];
+            if(linea.find(to_string(cedula))!=string::npos){ //Cuando encuentra la cedula, imprime la linea en donde la encontró
+                cout<<"Cliente encontrado: ";
+                cout<<partes[0]<<" "<<partes[1]<<" / "<<partes[2]<<endl;
+                encontrado=true;
+            }
+        }
+        if(!encontrado){ //Si no encuentra la cedula, imprime que no se encontró
+            cout<<"Cliente no encontrado"<<endl;
+        }
+        int n;
+        cout<<"1. Ver tarjetas registradas"<<endl;
+        cout<<"2. Ingresar nueva tarjeta"<<endl;
+        switch (n)
+        {
+        case 1:
+            /* code */
+            break;
+        
+        default:
+            break;
+        }
+        archivo.close();
+}
+}
+
+//
+
 //Actualizar Datos
-void actualizar_datos(string tipo){
+void actualizar_datos(string campo, int campo_num){
     bool encontrado = false;
-    string linea, buscar, reemplazar;
-    cin.ignore();
-    cout << "Ingrese " << tipo << " a actualizar: ";
-    getline(cin, buscar);
+    string linea, reemplazar;
+    long long int cedula;
+    cout << "Ingrese la cedula del cliente del cual se quieren actualizar los datos: ";
+    cin >> cedula;
+    while (cedula <= 100000000 || cedula >= 2500000000){
+        cout << "El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cin >> cedula;
+        cout << endl;
+    }
+
     ifstream archivo("CRUD.csv");
     ofstream archivo_temp("temp.csv");
-    if (archivo.is_open() && archivo_temp.is_open()) {
-        while (getline(archivo, linea)) {
-            size_t pos = linea.find(buscar);
-            if (pos != string::npos) {
-                cout << "Ingrese el nuevo dato: ";
+
+    if (archivo.is_open() && archivo_temp.is_open()){
+        while (getline(archivo, linea)){
+            size_t pos = linea.find(to_string(cedula));
+            if (pos != string::npos){
+                cin.ignore();
+                cout << "Ingrese " << campo << " a actualizar: ";
                 getline(cin, reemplazar);
-                linea.replace(pos, buscar.length(), reemplazar);
                 encontrado = true;
+                string partes[6];
+                size_t start = 0, end = 0;
+                for (int i = 0; i < 5; i++) {
+                    end = linea.find(';', start);
+                    if (end == string::npos) end = linea.length();
+                    partes[i] = linea.substr(start, end - start);
+                    start = end + 1;
+                }
+                partes[campo_num] = reemplazar;
+                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6];
             }
             archivo_temp << linea << endl;
-        }
-        if (encontrado) {
-            cout << "Dato actualizado con exito" << endl;
-        } else {
-            cout << "No se encontro el dato" << endl;
         }
         archivo.close();
         archivo_temp.close();
         remove("CRUD.csv");
         rename("temp.csv", "CRUD.csv");
+        if (encontrado){
+            cout << "El dato ha sido actualizado con exito" << endl;
+        } else {
+            cout << "No se encontro el cliente" << endl;
+        }
     } else {
         cout << "Error al abrir el archivo" << endl;
         exit(1);
     }
 }
 
-//Switch Actualizar Datos
+// Switch Actualizar Datos
 void switch_actualizar_datos(){
-    cout<<"**************************"<<endl;
-    cout<<"INGRESO A ACTUALIZAR DATOS"<<endl;
-    cout<<"**************************"<<endl;
-    cout<<"Seleccione el dato que desea actualizar: "<<endl;
+    cout << "**************************" << endl;
+    cout << "INGRESO A ACTUALIZAR DATOS" << endl;
+    cout << "**************************" << endl;
+    cout << "Seleccione el dato que desea actualizar: " << endl;
     int n;
     n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC");
-    switch (n)
-    {
-    case 1:
-        actualizar_datos("los nombres");
-        break;
-    case 2:
-        actualizar_datos("los apellidos");
-        break;
-    case 3:
-        actualizar_datos("la cedula");
-        break;
-    case 4:
-        actualizar_datos("el numero de tarjeta");
-        break;
-    case 5:
-        actualizar_datos("el CVC");
-        break;
-    default:
-        cout<<"Opcion no valida"<<endl;
-        break;
+    switch (n){
+        case 1:
+            actualizar_datos("el nombre", 0);
+            break;
+        case 2:
+            actualizar_datos("los apellidos", 1);
+            break;
+        case 3:
+            actualizar_datos("la cedula", 2);
+            break;
+        case 4:
+            actualizar_datos("el numero de tarjeta", 3);
+            break;
+        case 5:
+            actualizar_datos("el CVC (codigo de seguridad)", 4);
+            break;
+        default:
+            cout << "Opcion no valida" << endl;
+            break;
     }
 }
-
 
 //Eliminar Datos
 void eliminar_cliente(){
@@ -151,7 +224,7 @@ void eliminar_cliente(){
     if(archivo.is_open() && archivo_temp.is_open()){
         string linea;
         while(getline(archivo, linea)){
-            if(linea.find(to_string(cedula))==string::npos){
+            if(linea.find(to_string(cedula))==string::npos){ //si NO se encuentra la cedula en el archivo original esta NO se copia al archivo temporal que pasa a ser el original
                 archivo_temp<<linea<<endl;
             }
         }
@@ -166,7 +239,6 @@ void eliminar_cliente(){
     }
 }
 
-
 int main(){
     int n;
     crear_archivo();
@@ -179,6 +251,7 @@ int main(){
             ingreso_cliente();
             break;
         case 2:
+            consultar_cliente();
             break;
         case 3:
             switch_actualizar_datos();
