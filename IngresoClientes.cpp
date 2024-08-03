@@ -1,20 +1,23 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <unistd.h>
+#include <unistd.h> //Para usar la funcion sleep
+#include <cstdlib> //Para usar la funcion cls en windows
 using namespace std;
 void titulo(){
-    cout<<"*****************************************************************"<<endl;
+    cout<<"\n*****************************************************************"<<endl;
     cout<<"*    Bienvenido al sistema de gestion de tarjetas de credito    *"<<endl;
     cout<<"*****************************************************************"<<endl;
 }
-int imprimir_opciones(string tipo1, string tipo2, string tipo3, string tipo4, string tipo5){
+int imprimir_opciones(string tipo1, string tipo2, string tipo3, string tipo4, string tipo5, string tipo6){
     int n;
     cout << "\n1. " << tipo1 << endl;
     cout << "2. " << tipo2 << endl;
     cout << "3. " << tipo3 <<endl;
     cout << "4. " << tipo4 << endl;
     cout << "5. " << tipo5 <<endl;
+    cout<<tipo6<<endl;
+    cout << "Ingrese la opcion deseada: ";
     cin>>n;
     return n;
 }
@@ -37,9 +40,9 @@ void ingreso_cliente(){
         cout<<"Ingrese su numero de cedula: ";
         cin>>cedula;
         while(cedula<=100000000||cedula>=2500000000){
-        cout<<"Número de cedula incorrecto, ingrese nuevamente: ";
-        cin>>cedula;
-        cout<<endl;
+            cout<<"Número de cedula incorrecto, ingrese nuevamente: ";
+            cin>>cedula;
+            cout<<endl;
         }
         cout<<"Ingrese el número de la tarjeta: ";
         cin>>numero_tarjeta;
@@ -78,8 +81,8 @@ void consultar_cliente(){
     cout<<"******************"<<endl;
     cout<<"CONSULTAR CLIENTE"<<endl;
     cout<<"******************"<<endl;
-    long long int cedula, tarjeta_adicional;
-    int cvc_adicional;
+    long long int cedula, tarjeta_adicional = 0; // Línea cambiada
+    int cvc_adicional, n;
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
@@ -91,7 +94,7 @@ void consultar_cliente(){
     ofstream archivo_temp("temp.csv");
     if(archivo.is_open() && archivo_temp.is_open()){
         string linea;
-        bool encontrado;
+        bool encontrado = false;
         string partes[5];
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
@@ -101,71 +104,79 @@ void consultar_cliente(){
                 partes[i] = linea.substr(start, end - start);
                 start = end + 1;
             }
-                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
+            linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
             if(linea.find(to_string(cedula))!=string::npos){ //Cuando encuentra la cedula, imprime la linea en donde la encontró
                 cout<<"Cliente encontrado: ";
                 cout<<partes[0]<<" "<<partes[1]<<" / "<<partes[2]<<endl;
-                encontrado=true;
+                encontrado = true;
+
+                do{
+                    cout<<endl;
+                    cout<<"*************************"<<endl;
+                    cout<<"Visualizacion de tarjetas"<<endl;
+                    cout<<"*************************"<<endl;
+                    cout<<"1. Ver tarjetas registradas"<<endl;
+                    cout<<"2. Ingresar tarjeta adicional"<<endl;
+                    cout<<"3. Salir al Menu Principal"<<endl;
+                    cout<<"Ingrese la opcion deseada: ";
+                    cin>>n;
+                    switch(n){
+                        case 1:
+                            cout<<"Tarjetas registradas: "<<endl;
+                            cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
+                            if(tarjeta_adicional != 0){
+                                cout<<"Numero de tarjeta adicional: "<<tarjeta_adicional<<endl;
+                            }
+                            break;
+                        case 2:
+                            cout<<"Ingrese el numero de la tarjeta adicional: ";
+                            cin>>tarjeta_adicional;
+                            while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
+                                cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+                                cin>>tarjeta_adicional;
+                            }
+                            cout<<"Ingrese el CVC de la tarjeta adicional: ";
+                            cin>>cvc_adicional;    
+                            while(cvc_adicional>=1000 || cvc_adicional<100){
+                                cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                                cin>>cvc_adicional;
+                            }
+                            cout<<"Tarjeta adicional ingresada con exito"<<endl;
+                            archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<tarjeta_adicional<<";"<<cvc_adicional<<endl;
+                            break;
+                        case 3:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            archivo_temp<<linea<<endl;
+                            break;
+                        default:
+                            cout<<"Opcion no valida"<<endl;
+                            break;
+                    }
+                } while (n!=3);
+            } else {
+                archivo_temp << linea << endl; // Línea cambiada
             }
         }
         if(!encontrado){ //Si no encuentra la cedula, imprime que no se encontró
-            cout<<"Cliente no encontrado"<<endl;
-            exit(1);
-        }
-        int n;
-        do{
-        cout<<endl;
-        cout<<"*************************"<<endl;
-        cout<<"Visualizacion de tarjetas"<<endl;
-        cout<<"*************************"<<endl;
-        cout<<"1. Ver tarjetas registradas"<<endl;
-        cout<<"2. Ingresar tarjeta adicional"<<endl;
-        cout<<"3. Salir al Menu Principal"<<endl;
-        cout<<"Ingrese la opcion deseada"<<endl;
-        cin>>n;
-            switch(n){
-        case 1:
-            cout<<"Tarjetas registradas: "<<endl;
-            cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
-            if(tarjeta_adicional!=0){
-                cout<<"Numero de tarjeta adicional: "<<tarjeta_adicional<<endl;
-            }
-            break;
-        case 2:
-            cout<<"Ingrese el numero de la tarjeta adicicional: ";
-            cin>>tarjeta_adicional;
-            while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
-                cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
-                cin>>tarjeta_adicional;
-            }
-            cout<<"Ingrese el CVC de la tarjeta adicional: ";
-            cin>>cvc_adicional;    
-            while(cvc_adicional>=1000 || cvc_adicional<100){
-                cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
-                cin>>cvc_adicional;
-            }
-            cout<<"Tarjeta adicional ingresada con exito"<<endl;
-            archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<tarjeta_adicional<<";"<<cvc_adicional<<endl;
-            break;
-        case 3:
-            for(int i=0;i<3;i++){
-                cout<<"Saliendo en "<<3-i<<endl;
+            cout<<"Cliente no encontrado, regresando al menu principal";
+            for(int i=0;i<4;i++){
                 sleep(1.5);
+                cout<<".";
             }
-            cout<<"Regresando al menu principal"<<endl;
-            sleep(1.5);
-            cout<<endl;
-            break;
-        default:
-            cout<<"Opcion no valida"<<endl;
-            break;
+            system("cls");
         }
-        } while (n!=3);
-        archivo.close();
-        archivo_temp.close();
+        archivo.close(); 
+        archivo_temp.close(); 
         remove("CRUD.csv");
         rename("temp.csv","CRUD.csv");
-}
+    }else{
+        cout << "Error al abrir el archivo" << endl;
+        exit(1);
+    }
 }
 
 //
@@ -207,10 +218,6 @@ void actualizar_datos(string campo, int campo_num){
           }
           archivo_temp << linea << endl;
         }
-        archivo.close();
-        archivo_temp.close();
-        remove("CRUD.csv");
-        rename("temp.csv", "CRUD.csv");
         if (encontrado){
             cout << "El dato ha sido actualizado con exito" << endl;
         } else {
@@ -220,6 +227,10 @@ void actualizar_datos(string campo, int campo_num){
         cout << "Error al abrir el archivo" << endl;
         exit(1);
     }
+    archivo.close();
+    archivo_temp.close();
+    remove("CRUD.csv");
+    rename("temp.csv", "CRUD.csv");
 }
 
 // Switch Actualizar Datos
@@ -229,8 +240,9 @@ void switch_actualizar_datos(){
     cout << "**************************" << endl;
     cout << "Seleccione el dato que desea actualizar: " << endl;
     int n;
-    n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC");
-    switch (n){
+    n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC","6. Salir al menu principal");
+    do{
+        switch (n){
         case 1:
             actualizar_datos("el nombre", 0);
             break;
@@ -246,10 +258,19 @@ void switch_actualizar_datos(){
         case 5:
             actualizar_datos("el CVC (codigo de seguridad)", 4);
             break;
+        case 6:
+            cout << "Regresando al menu principal";
+            for(int i=0;i<4;i++){
+                sleep(1.5);
+                cout<<".";
+            }
+            system("cls");
+            break;
         default:
             cout << "Opcion no valida" << endl;
             break;
     }
+    }while(n!=6);
 }
 
 //Eliminar Datos
@@ -293,22 +314,27 @@ int main(){
     do
     {
         titulo();
-        n = imprimir_opciones("Ingresar cliente nuevo", "Consultar cliente", "Actualizar cliente", "Eliminar cliente", "Salir del programa");
+        n = imprimir_opciones("Ingresar cliente nuevo", "Consultar cliente", "Actualizar cliente", "Eliminar cliente", "Salir del programa","");
         switch (n)
         {
         case 1: //ingreso de clientes
+            system("cls");
             ingreso_cliente();
             break;
         case 2:
+            system("cls");
             consultar_cliente();
             break;
         case 3:
+            system("cls");
             switch_actualizar_datos();
             break;
         case 4:
+            system("cls");
             eliminar_cliente();
             break;
         case 5:
+            system("cls");
             cout<<"Gracias por usar el programa"<<endl;
             exit(1);
             break;
