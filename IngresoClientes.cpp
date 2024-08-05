@@ -115,7 +115,7 @@ void usar_tarjeta(){
     cout<<"\n**************"<<endl;
     cout<<"USAR TARJETA"<<endl;
     cout<<"**************"<<endl;
-    int cvc, consumo, consumo_temp=0, resp;
+    int cvc, consumo, consumo_temp=0;
     bool encontrado = false;
     cout<<"Ingrese el CVC de la tarjeta a usar: ";
     cin>>cvc;
@@ -131,11 +131,16 @@ void usar_tarjeta(){
             size_t start = 0, end = 0;
             string partes[11];
             int i = 0;
-            while ((end = linea.find(';', start)) != string::npos) {
+            while ((end = linea.find(';', start)) != string::npos && i<11) {
                 partes[i++] = linea.substr(start, end - start);
                 start = end + 1;
             }
-            partes[i] = linea.substr(start);
+            if(i<11){
+                partes[i] = linea.substr(start);
+                while(++i<11){
+                    partes[i] = "";
+                }
+            }
             if(partes[4] == to_string(cvc)||partes[7] == to_string(cvc)){
                 encontrado = true;
                 cout<<"Tarjeta encontrada: ";
@@ -184,7 +189,7 @@ void usar_tarjeta(){
                     partes[9] = to_string(consumo_temp);
                     partes[5]=to_string(stoi(partes[5])-consumo_temp);
                     archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<endl;
-                    } while (n1!=4);
+                } while (n1!=4);
                 }else{
                     cout<<partes[6]<< " (Limite de credito: $"<<stoi(partes[8])<<")"<<endl;
                     cout<<"Fecha de corte: 10 de cada mes"<<endl;
@@ -229,18 +234,8 @@ void usar_tarjeta(){
                         }
                         partes[10] = to_string(consumo_temp);
                         partes[8]=to_string(stoi(partes[8])-consumo_temp);
-                        archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<endl;
-                        cout<<"Desea realizar otro consumo? (1. Si / 2. No): ";
-                        cin>>resp;
-                        while(resp!=1 && resp!=2){
-                            cout<<"Opcion no valida, intentelo de nuevo: ";
-                            cin>>resp;
-                        }
-                        for(int i=0;i<3;i++){
-                            sleep(1.5);
-                            cout<<".";
-                        }
-                    } while (n2!=4 && resp==1);
+                        archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<endl; 
+                    } while (n2!=4);
                 }
             }else{
                 archivo_temp<<linea<<endl;
@@ -285,14 +280,18 @@ void consultar_cliente(){
         bool encontrado = false;
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
-            string partes[9];
+            string partes[11];
             int i = 0;
-            while ((end = linea.find(';', start)) != string::npos) {
+            while ((end = linea.find(';', start)) != string::npos && i<11) {
                 partes[i++] = linea.substr(start, end - start);
                 start = end + 1;
             }
-            partes[i] = linea.substr(start);
-
+            if(i<11){
+                partes[i] = linea.substr(start);
+                while(++i<11){
+                    partes[i] = "";
+                }
+            }
             if(partes[2] == to_string(cedula)){
                 encontrado = true;
                 cout<<"Cliente encontrado: ";
@@ -388,16 +387,22 @@ void actualizar_datos(string campo, int campo_num){
             cout << "Ingrese " << campo << " a actualizar: ";
             getline(cin, reemplazar);
             encontrado = true;
-            string partes[5];
+            string partes[11];
             size_t start = 0, end = 0;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 11; i++) {
                 end = linea.find(';', start);
-                if (end == string::npos) end = linea.length();
-                partes[i] = linea.substr(start, end - start);
-                start = end + 1;
-               }
-                partes[campo_num] = reemplazar;
-                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
+                if (end == string::npos) {
+                partes[i] = linea.substr(start);
+                while (++i < 11) {
+                    partes[i] = "";
+                }
+                break;
+            }
+            partes[i] = linea.substr(start, end - start);
+            start = end + 1;
+            }
+            partes[campo_num] = reemplazar;
+            linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4];
           }
           archivo_temp << linea << endl;
         }
