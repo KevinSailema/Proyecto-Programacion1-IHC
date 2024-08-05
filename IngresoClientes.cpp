@@ -30,7 +30,7 @@ void ingreso_cliente(){
     cout<<"********************"<<endl;
     string nombres, apellidos;
     long long int cedula, numero_tarjeta;
-    int cvc;
+    int cvc, limite_consumo=2000;
     ofstream archivo("CRUD.csv",ios::app);
     if(archivo.is_open()){
         cin.ignore();
@@ -57,7 +57,7 @@ void ingreso_cliente(){
             cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
             cin>>cvc;
         }
-        archivo<<nombres<<";"<<apellidos<<";"<<cedula<<";"<<numero_tarjeta<<";"<<cvc<<endl;
+        archivo<<nombres<<";"<<apellidos<<";"<<cedula<<";"<<numero_tarjeta<<";"<<cvc<<";"<<limite_consumo<<endl;
         archivo.close();
     }else{
         cout << "Error al abrir el archivo" << endl;
@@ -98,7 +98,7 @@ void consultar_cliente(){
         bool encontrado = false;
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
-            string partes[7];
+            string partes[9];
             int i = 0;
             while ((end = linea.find(';', start)) != string::npos) {
                 partes[i++] = linea.substr(start, end - start);
@@ -124,8 +124,8 @@ void consultar_cliente(){
                         case 1:
                             cout<<"Tarjetas registradas: "<<endl;
                             cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
-                            if(partes[5] != ""){
-                                cout<<"Numero de tarjeta adicional: "<<partes[5]<<endl;
+                            if(partes[6] != ""){
+                                cout<<"Numero de tarjeta adicional: "<<partes[6]<<endl;
                             }
                             break;
                         case 2:
@@ -141,8 +141,9 @@ void consultar_cliente(){
                                 cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
                                 cin>>cvc_adicional;
                             }
-                            partes[5] = to_string(tarjeta_adicional);
-                            partes[6] = to_string(cvc_adicional);
+                            partes[6] = to_string(tarjeta_adicional);
+                            partes[7] = to_string(cvc_adicional);
+                            partes[8] = "2000";
                             cout<<"Tarjeta adicional ingresada con exito"<<endl;
                             break;
                         case 3:
@@ -152,8 +153,7 @@ void consultar_cliente(){
                             break;
                     }
                 } while (n!=3);
-
-                archivo_temp << partes[0] << ";" << partes[1] << ";" << partes[2] << ";" << partes[3] << ";" << partes[4] << ";" << partes[5] << ";" << partes[6] << endl;
+                archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<endl;
             } else {
                 archivo_temp<<linea<<endl;
             }
@@ -176,12 +176,44 @@ void consultar_cliente(){
     }
 }
 
+//Cálculo de consumos
+int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
+    int consumo;
+    int meses;
+    cout<<"Ingrese el monto del consumo: ";
+    cin>>consumo;
+    while(consumo<=0){
+        cout<<"El monto del consumo debe ser mayor a 0, intentelo de nuevo: ";
+        cin>>consumo;
+    }
+    if(consumo >= limite_descuento && consumo < 2000){
+        consumo = consumo-consumo*(descuento);
+        cout<<"A cuantos meses desea diferir? (1-3): ";
+        cin>>meses;
+        while(meses<1 || meses>3){
+            cout<<"El número de meses debe ser entre 1 y 3, intentelo de nuevo: ";
+            cin>>meses;
+        }
+        consumo = consumo/meses;
+        cout<<"El monto a pagar por mes es de: $"<<consumo<<" (diferido a "<<meses<< " mes/es)"<<endl;
+    }else{
+        if (consumo >= limite_credito){
+            cout<<"El monto excede el limite de credito ("<<limite_credito<<"), intentelo de nuevo"<<endl;
+        }else{
+            cout<<"No se aplica descuento"<<endl;
+            cout<<"El monto minimo para aplicar descuento es de: $"<<limite_descuento<<endl;
+            cout<<"El monto a pagar es de: $"<<consumo<<endl;
+        }
+    }
+    return consumo;
+}
+
 //Tarjeta a usar
 void usar_tarjeta(){
     cout<<"\n**************"<<endl;
     cout<<"USAR TARJETA"<<endl;
     cout<<"**************"<<endl;
-    int cvc;
+    int cvc, consumo, consumo_temp=0;
     bool encontrado = false;
     cout<<"Ingrese el CVC de la tarjeta a usar: ";
     cin>>cvc;
@@ -195,18 +227,18 @@ void usar_tarjeta(){
         string linea;
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
-            string partes[9];
+            string partes[11];
             int i = 0;
             while ((end = linea.find(';', start)) != string::npos) {
                 partes[i++] = linea.substr(start, end - start);
                 start = end + 1;
             }
             partes[i] = linea.substr(start);
-            if(partes[4] == to_string(cvc) || partes[6] == to_string(cvc)){
+            if(partes[4] == to_string(cvc)||partes[7] == to_string(cvc)){
                 encontrado = true;
                 cout<<"Tarjeta encontrada: ";
                 if(partes[4] == to_string(cvc)){
-                    cout<<partes[3]<< " (Limite de credito: $2000)"<<endl;
+                    cout<<partes[3]<< " (Limite de credito: $"<<stoi(partes[5])<<")"<<endl; //pasar de un string a un entero
                     cout<<"Fecha de corte: 15 de cada mes"<<endl;
                     cout<<"Fecha de pago: 30 de cada mes"<<endl;
                     cout<<"Beneficios: "<<endl;
@@ -214,37 +246,96 @@ void usar_tarjeta(){
                     cout<<"- 15% de descuento en tu proximo vuelo con LATAM Airlines"<<endl;
                     cout<<"- 20% de descuento en consultas medicas en METRORED"<<endl;
                     int n1;
+                    do{
                     cout<<"\nEscoja el tipo de consumo: "<<endl;
                     cout<<"1. Consumo en restaurantes"<<endl;
                     cout<<"2. Consumo en vuelos"<<endl;
                     cout<<"3. Consumo en consultas medicas"<<endl;
+                    cout<<"4. Salir al menu principal"<<endl;
                     cin>>n1;
-                    switch (n1)
-                    {
-                    case 1:
-
-                        break;
-                    case 2:
-
-                        break;
-
-                    case 3:
-
-                        break;
-                    default:
-                        break;
+                        switch (n1)
+                        {
+                        case 1:
+                            consumo=calcular_consumos(0.1, 50, stoi(partes[5]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 2:
+                            consumo=calcular_consumos(0.15, 500, stoi(partes[5]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 3:
+                            consumo=calcular_consumos(0.2, 40, stoi(partes[5]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 4:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                            sleep(1.5);
+                            cout<<".";
+                            }
+                            system("cls");
+                            break;
+                        default:
+                            cout<<"Opcion no valida"<<endl;
+                            break;
                     }
+                    partes[9] = to_string(consumo_temp);
+                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<endl;
+                    } while (n1!=4);
                 }else{
-                    cout<<partes[5]<< " (Limite de credito: $2000)"<<endl;
+                    cout<<partes[6]<< " (Limite de credito: $"<<stoi(partes[8])<<")"<<endl;
                     cout<<"Fecha de corte: 10 de cada mes"<<endl;
                     cout<<"Fecha de pago: 25 de cada mes"<<endl;
                     cout<<"Beneficios: "<<endl;
                     cout<<"- 10% de descuento en Chez Jerome, Fogo de Chao, Carmine"<<endl;
                     cout<<"- 15% de descuento en tu proximo vuelo con AVIANCA"<<endl;
                     cout<<"- 20% de descuento en consultas medicas en SIME USFQ"<<endl;
+                    int n2;
+                    do{
+                    cout<<"\nEscoja el tipo de consumo: "<<endl;
+                    cout<<"1. Consumo en restaurantes"<<endl;
+                    cout<<"2. Consumo en vuelos"<<endl;
+                    cout<<"3. Consumo en consultas medicas"<<endl;
+                    cout<<"4. Salir al menu principal"<<endl;
+                    cin>>n2;
+                        switch (n2)
+                        {
+                        case 1:
+                            consumo=calcular_consumos(0.1, 50, stoi(partes[8]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 2:
+                            consumo=calcular_consumos(0.15, 500, stoi(partes[8]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 3:
+                            consumo=calcular_consumos(0.2, 40, stoi(partes[8]));
+                            consumo_temp = consumo + consumo_temp;
+                            break;
+                        case 4:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                            sleep(1.5);
+                            cout<<".";
+                            }
+                            system("cls");
+                            break;
+                        default:
+                            cout<<"Opcion no valida"<<endl;
+                            break;
+                        }
+                        partes[10] = to_string(consumo_temp);
+                        archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<endl;
+                    } while (n2!=4);
                 }
+            }else{
+                archivo_temp<<linea<<endl;
             }
         }
+        archivo.close(); 
+        archivo_temp.close(); 
+        remove("CRUD.csv");
+        rename("temp.csv","CRUD.csv");
     }
     if(!encontrado){
         cout<<"Tarjeta no encontrada, regresando al menu principal";
