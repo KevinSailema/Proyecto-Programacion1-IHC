@@ -69,13 +69,14 @@ void ingreso_cliente(){
 void crear_archivo(){
     ofstream archivo("CRUD.csv",ios::app);
     if(archivo.is_open()){
-        cout << "\nArchivo creado correctamente" << endl;
+        cout << "\nArchivo abierto correctamente" << endl;
         archivo.close();
     }else{
         cout << "Error al crear el archivo" << endl;
         exit(1);
   }
 }
+
 
 //Cálculo de consumos
 int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
@@ -109,13 +110,12 @@ int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
     return consumo;
 }
 
-
 //Tarjeta a usar
 void usar_tarjeta(){
     cout<<"\n**************"<<endl;
     cout<<"USAR TARJETA"<<endl;
     cout<<"**************"<<endl;
-    int cvc, consumo, consumo_temp=0;
+    int cvc, consumo, consumo_temp=0, resp;
     bool encontrado = false;
     cout<<"Ingrese el CVC de la tarjeta a usar: ";
     cin>>cvc;
@@ -129,15 +129,15 @@ void usar_tarjeta(){
         string linea;
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
-            string partes[11];
+            string partes[13];
             int i = 0;
-            while ((end = linea.find(';', start)) != string::npos && i<11) {
+            while ((end = linea.find(';', start)) != string::npos && i<13) {
                 partes[i++] = linea.substr(start, end - start);
                 start = end + 1;
             }
-            if(i<11){
+            if(i<13){
                 partes[i] = linea.substr(start);
-                while(++i<11){
+                while(++i<13){
                     partes[i] = "";
                 }
             }
@@ -188,8 +188,16 @@ void usar_tarjeta(){
                     }
                     partes[9] = to_string(consumo_temp);
                     partes[5]=to_string(stoi(partes[5])-consumo_temp);
-                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<endl;
-                } while (n1!=4);
+                    partes[11]=to_string(2000-stoi(partes[5]));
+                    cout<<"Desea registrar otro consumo? (1. Si / 2. No): ";
+                    cin>>resp;
+                    while(resp!=1 && resp!=2){
+                        cout<<"Opcion no valida, intentelo de nuevo: ";
+                        cin>>resp;
+                    }
+                } while (n1!=4 && resp==1);
+                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl;
+                    system("cls");
                 }else{
                     cout<<partes[6]<< " (Limite de credito: $"<<stoi(partes[8])<<")"<<endl;
                     cout<<"Fecha de corte: 10 de cada mes"<<endl;
@@ -234,8 +242,16 @@ void usar_tarjeta(){
                         }
                         partes[10] = to_string(consumo_temp);
                         partes[8]=to_string(stoi(partes[8])-consumo_temp);
-                        archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<endl; 
-                    } while (n2!=4);
+                        partes[12]=to_string(2000-stoi(partes[8]));
+                        cout<<"Desea registrar otro consumo? (1. Si / 2. No): ";
+                        cin>>resp;
+                        while(resp!=1 && resp!=2){
+                            cout<<"Opcion no valida, intentelo de nuevo: ";
+                            cin>>resp;
+                        }
+                    } while (n2!=4 && resp==1);
+                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl; 
+                    system("cls");
                 }
             }else{
                 archivo_temp<<linea<<endl;
@@ -280,15 +296,15 @@ void consultar_cliente(){
         bool encontrado = false;
         while(getline(archivo, linea)){
             size_t start = 0, end = 0;
-            string partes[11];
+            string partes[13];
             int i = 0;
-            while ((end = linea.find(';', start)) != string::npos && i<11) {
+            while ((end = linea.find(';', start)) != string::npos && i<13) {
                 partes[i++] = linea.substr(start, end - start);
                 start = end + 1;
             }
-            if(i<11){
+            if(i<13){
                 partes[i] = linea.substr(start);
-                while(++i<11){
+                while(++i<13){
                     partes[i] = "";
                 }
             }
@@ -304,6 +320,7 @@ void consultar_cliente(){
                     cout<<"1. Ver tarjetas registradas"<<endl;
                     cout<<"2. Ingresar tarjeta adicional"<<endl;
                     cout<<"3. Ingresar pagos"<<endl;
+                    cout<<"4. Salir al menu principal"<<endl;
                     cout<<"Ingrese la opcion deseada: ";
                     cin>>n;
                     switch(n){
@@ -333,12 +350,21 @@ void consultar_cliente(){
                             cout<<"Tarjeta adicional ingresada con exito"<<endl;
                             break;
                         case 3:
+                            usar_tarjeta();
+                            break;
+                        case 4:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            system("cls");
                             break;
                         default:
                             cout<<"Opcion no valida"<<endl;
                             break;
                     }
-                } while (n!=3);
+                } while (n!=4);
                 archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<endl;
             } else {
                 archivo_temp<<linea<<endl;
@@ -362,6 +388,226 @@ void consultar_cliente(){
     }
 }
 
+//Pagar deudas
+void pagar_deudas(){
+    cout<<"\n***********"<<endl;
+    cout<<"PAGAR DEUDA"<<endl;
+    cout<<"***********"<<endl;
+    int cvc, opcion, pago_minimo, monto, adeudado, pagar;
+    bool encontrado = false;
+    cout<<"Ingrese el CVC de la tarjeta a usar: ";
+    cin>>cvc;
+    while(cvc>=1000 || cvc<100){
+        cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+        cin>>cvc;
+    }
+    ifstream archivo("CRUD.csv");
+    ofstream archivo_temp("temp.csv"); // abrir archivo temporal
+    if(archivo.is_open() && archivo_temp.is_open()){
+        string linea;
+        while(getline(archivo, linea)){
+            size_t start = 0, end = 0;
+            string partes[13];
+            int i = 0;
+            while ((end = linea.find(';', start)) != string::npos && i<13) {
+                partes[i++] = linea.substr(start, end - start);
+                start = end + 1;
+            }
+            if(i<13){
+                partes[i] = linea.substr(start);
+                while(++i<13){
+                    partes[i] = "";
+                }
+            }
+            if(partes[4] == to_string(cvc)||partes[7] == to_string(cvc)){
+                encontrado = true;
+                cout<<"Tarjeta encontrada: ";
+                if(partes[4] == to_string(cvc)){
+                    do{
+                    cout<<"*****************************************"<<endl;
+                    cout<<"La deuda total es de: $"<<2000-stoi(partes[5])<<endl;
+                    cout<<"*****************************************"<<endl;
+                    cout<<"Como desea pagar la deuda?"<<endl;
+                    cout<<"1. Pagar la totalidad"<<endl;
+                    cout<<"2. Pagar el minimo"<<endl;
+                    cout<<"3. Salir al menu principal"<<endl;
+                    cout<<"Ingrese la opcion deseada: ";
+                    cin>>opcion;
+                        switch(opcion){
+                        case 1:
+                            cout<<"Pagando la totalidad de la deuda mensual";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            partes[11] = "";
+                            partes[5] = "2000";
+                            break;
+                        case 2:
+                            pago_minimo=stoi(partes[5])*0.05;
+                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo;
+                            cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
+                            cin>>monto;
+                            if(monto<pago_minimo){
+                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito";
+                                adeudado=stoi(partes[11])-monto;
+                                pagar=adeudado+adeudado*0.0232;
+                                cout<<"Pagando monto ingresado"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"Pago realizado con exito"<<endl;
+                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"La nueva deuda es de: $"<<pagar<<endl;
+                                cout<<"Recuerde que ha entrado a buro de credito, su historial crediticio se vera afectado"<<endl;
+                                partes[11]=to_string(pagar);
+                                partes[5]="2000";
+                            }else{
+                                cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito";
+                                adeudado=stoi(partes[11])-monto;
+                                pagar=adeudado+adeudado*0.0232;
+                                cout<<"Pagando monto ingresado"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"Pago realizado con exito"<<endl;
+                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"La nueva deuda es de: $"<<pagar<<endl;
+                                cout<<"Recuerde pagar al banco puntualmente"<<endl;
+                                partes[11]=to_string(pagar);
+                                partes[5]="2000";
+                            }
+                            
+                            break;
+                        case 3:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            system("cls");
+                            break;
+                        default:
+                            cout<<"Opcion no valida"<<endl;
+                            break;
+                    }
+                    }while(opcion!=3);
+                    
+                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl;
+                    system("cls");
+                }else{
+                    do{
+                    cout<<"*****************************************"<<endl;
+                    cout<<"La deuda total es de: $"<<2000-stoi(partes[8])<<endl;
+                    cout<<"*****************************************"<<endl;
+                    cout<<"Como desea pagar la deuda?"<<endl;
+                    cout<<"1. Pagar la totalidad"<<endl;
+                    cout<<"2. Pagar el minimo"<<endl;
+                    cout<<"3. Salir al menu principal"<<endl;
+                    cout<<"Ingrese la opcion deseada: ";
+                    cin>>opcion;
+                        switch(opcion){
+                        case 1:
+                            cout<<"Pagando la totalidad de la deuda mensual";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            partes[12] = "";
+                            partes[8] = "2000";
+                            break;
+                        case 2:
+                            pago_minimo=stoi(partes[8])*0.05;
+                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo;
+                            cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
+                            cin>>monto;
+                            if(monto<pago_minimo){
+                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito";
+                                adeudado=stoi(partes[12])-monto;
+                                pagar=adeudado+adeudado*0.0232;
+                                cout<<"Pagando monto ingresado"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"Pago realizado con exito"<<endl;
+                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"La nueva deuda es de: $"<<pagar<<endl;
+                                cout<<"Recuerde que ha entrado a buro de credito, su historial crediticio se vera afectado"<<endl;
+                                partes[12]=to_string(pagar);
+                                partes[8]="2000";
+                            }else{
+                                cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito";
+                                adeudado=stoi(partes[12])-monto;
+                                pagar=adeudado+adeudado*0.0232;
+                                cout<<"Pagando monto ingresado"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"Pago realizado con exito"<<endl;
+                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                for(int i=0;i<4;i++){
+                                    sleep(1.5);
+                                    cout<<".";
+                                }
+                                cout<<"La nueva deuda es de: $"<<pagar<<endl;
+                                cout<<"Recuerde pagar al banco puntualmente"<<endl;
+                                partes[12]=to_string(pagar);
+                                partes[8]="2000";
+                            }
+                            break;
+                        case 3:
+                            cout<<"Regresando al menu principal";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            system("cls");
+                            break;
+                        default:
+                            cout<<"Opcion no valida"<<endl;
+                            break;
+                    }
+                    }while(opcion!=3);
+                    archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl; 
+                    system("cls");
+                }
+            }else{
+                archivo_temp<<linea<<endl;
+            }
+        }
+        archivo.close(); 
+        archivo_temp.close(); 
+        remove("CRUD.csv");
+        rename("temp.csv","CRUD.csv");
+    }else{
+        cout << "Error al abrir el archivo" << endl;
+        exit(1);
+    }
+    if(!encontrado){
+        cout<<"Tarjeta no encontrada, regresando al menu principal";
+        for(int i=0;i<4;i++){
+            sleep(1.5);
+            cout<<".";
+        }
+        system("cls");
+    }
+}
 
 //Actualizar Datos
 void actualizar_datos(string campo, int campo_num){
@@ -387,13 +633,13 @@ void actualizar_datos(string campo, int campo_num){
             cout << "Ingrese " << campo << " a actualizar: ";
             getline(cin, reemplazar);
             encontrado = true;
-            string partes[11];
+            string partes[13];
             size_t start = 0, end = 0;
-            for (int i = 0; i < 11; i++) {
+            for (int i = 0; i < 13; i++) {
                 end = linea.find(';', start);
                 if (end == string::npos) {
                 partes[i] = linea.substr(start);
-                while (++i < 11) {
+                while (++i < 13) {
                     partes[i] = "";
                 }
                 break;
@@ -507,13 +753,13 @@ void eliminar_cliente(){
     }
 }
 
-int main(){
+//Menu Principal
+void menu(){
     int n;
-    crear_archivo();
     do
     {
         titulo();
-        n = imprimir_opciones("Ingresar cliente nuevo", "Consultar cliente", "Actualizar cliente", "Eliminar cliente", "Salir del programa","");
+        n = imprimir_opciones("Ingresar cliente nuevo", "Consultar cliente", "Pagar deudas", "Actualizar datos", "Eliminar cliente", "6. Salir del programa");
         switch (n)
         {
         case 1: //ingreso de clientes
@@ -523,17 +769,20 @@ int main(){
         case 2:
             system("cls");
             consultar_cliente();
-            usar_tarjeta();
             break;
         case 3:
             system("cls");
-            switch_actualizar_datos();
+            pagar_deudas();
             break;
         case 4:
             system("cls");
-            eliminar_cliente();
+            switch_actualizar_datos();
             break;
         case 5:
+            system("cls");
+            eliminar_cliente();
+            break;
+        case 6:
             system("cls");
             cout<<"Gracias por usar el programa"<<endl;
             exit(1);
@@ -542,6 +791,11 @@ int main(){
             cout<<"Opcion no valida"<<endl;
             break;
         }
-    } while (n <= 4 || n >= 1);
+    } while (n!=6);
+}
+
+//Main
+int main(){
+    menu();
     return 0;
 }
