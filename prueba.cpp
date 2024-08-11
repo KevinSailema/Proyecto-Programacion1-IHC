@@ -134,29 +134,29 @@ void usar_tarjeta() {
         cout << "El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
         cin >> cvc;
     }
-    ifstream archivo("CRUD.csv"); // abrir archivo
+    ifstream archivo("CRUD.csv");
     ofstream archivo_temp("temp.csv"); // abrir archivo temporal
-    if (archivo.is_open() && archivo_temp.is_open()) { // si se abren los archivos
+    if (archivo.is_open() && archivo_temp.is_open()) {
         string linea;
-        while (getline(archivo, linea)) { // leer linea por linea
-            size_t start = 0, end = 0; // inicio y fin de la linea
-            string partes[13]; // partes de la linea
-            int i = 0; // contador
-            while ((end = linea.find(';', start)) != string::npos && i < 13) { // separar la linea en partes
-                partes[i++] = linea.substr(start, end - start); // guardar las partes en los espacios del arreglo
-                start = end + 1; // actualizar el inicio
+        while (getline(archivo, linea)) {
+            size_t start = 0, end = 0;
+            string partes[13];
+            int i = 0;
+            while ((end = linea.find(';', start)) != string::npos && i < 13) {
+                partes[i++] = linea.substr(start, end - start);
+                start = end + 1;
             }
-            if (i < 13) { // si no se han guardado todas las partes
-                partes[i] = linea.substr(start); // guardar la parte restante
-                while (++i < 13) { // completar las partes faltantes
-                    partes[i] = "0"; // con un string vacio
+            if (i < 13) {
+                partes[i] = linea.substr(start);
+                while (++i < 13) {
+                    partes[i] = "";
                 }
             }
-            if (partes[4] == to_string(cvc) || partes[7] == to_string(cvc)) { // si el cvc es igual al ingresado
+            if (partes[4] == to_string(cvc) || partes[7] == to_string(cvc)) {
                 encontrado = true;
                 cout << "Tarjeta encontrada: ";
-                if (partes[4] == to_string(cvc)) { // si el cvc es de la tarjeta principal
-                    cout << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl;
+                if (partes[4] == to_string(cvc)) {
+                    cout << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl; // pasar de un string a un entero
                     cout << "Fecha de corte: 15 de cada mes" << endl;
                     cout << "Fecha de pago: 30 de cada mes" << endl;
                     cout << "Beneficios: " << endl;
@@ -173,8 +173,8 @@ void usar_tarjeta() {
                         cin >> n1;
                         switch (n1) {
                             case 1:
-                                consumo = calcular_consumos(0.1, 50, stoi(partes[5])); // calcular el consumo
-                                consumo_temp += consumo; // sumar el consumo al total
+                                consumo = calcular_consumos(0.1, 50, stoi(partes[5]));
+                                consumo_temp += consumo;
                                 break;
                             case 2:
                                 consumo = calcular_consumos(0.15, 500, stoi(partes[5]));
@@ -196,20 +196,21 @@ void usar_tarjeta() {
                                 cout << "Opcion no valida" << endl;
                                 break;
                         }
-                        cout << "Desea registrar otro consumo? (1. Si / 2. No): "; // devolver registro
+                        cout << "Desea registrar otro consumo? (1. Si / 2. No): ";
                         cin >> resp;
                         while (resp != 1 && resp != 2) {
                             cout << "Opcion no valida, intentelo de nuevo: ";
                             cin >> resp;
                         }
-                    } while (n1 != 4 && resp == 1); // mientras no se quiera salir y se quiera registrar otro consumo
-                    if (consumo_temp > 0) { // si hay un consumo
-                        int consumo_actual = stoi(partes[9]) + consumo_temp; // sumar el consumo al total
-                        int limite_actual = stoi(partes[5]) - consumo_temp; // restar el consumo al limite
+                    } while (n1 != 4 && resp == 1);
+                    if (consumo_temp > 0) {
+                        int consumo_actual = stoi(partes[9]) + consumo_temp;
+                        int deuda_actual = stoi(partes[11]) + consumo_temp;
+                        int limite_actual = stoi(partes[5]) - consumo_temp;
 
-                        partes[11] = to_string(consumo_actual); // actualizar el deuda
-                        partes[9] = to_string(0); // reiniciar consumo temporal
-                        partes[5] = to_string(limite_actual);  // actualizar el limite
+                        partes[9] = to_string(consumo_actual);
+                        partes[11] = to_string(deuda_actual);
+                        partes[5] = to_string(limite_actual);
                     }
                 } else {
                     cout << partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
@@ -261,31 +262,32 @@ void usar_tarjeta() {
                     } while (n2 != 4 && resp == 1);
                     if (consumo_temp > 0) {
                         int consumo_actual = stoi(partes[10]) + consumo_temp;
+                        int deuda_actual = stoi(partes[12]) + consumo_temp;
                         int limite_actual = stoi(partes[8]) - consumo_temp;
 
-                        partes[12] = to_string(consumo_actual); // actualizar deuda
-                        partes[10] = to_string(0); // reiniciar consumo temporal
-                        partes[8] = to_string(limite_actual); // actualizar limite
+                        partes[10] = to_string(consumo_actual);
+                        partes[12] = to_string(deuda_actual);
+                        partes[8] = to_string(limite_actual);
                     }
                 }
             }
             // Escribir en el archivo temporal
-            archivo_temp << partes[0] << ";" << partes[1] << ";" << partes[2] << ";" 
+            archivo_temp << partes[0] << ";" << partes[1] << ";" << partes[2] << ";"
                          << partes[3] << ";" << partes[4] << ";" << partes[5] << ";"
                          << partes[6] << ";" << partes[7] << ";" << partes[8] << ";"
                          << partes[9] << ";" << partes[10] << ";" << partes[11] << ";"
-                         << partes[12] << endl; // escribir la linea
+                         << partes[12] << endl;
         }
-        archivo.close(); // cerrar archivo
-        archivo_temp.close(); // cerrar archivo temporal
-        remove("CRUD.csv"); // eliminar archivo original
-        rename("temp.csv", "CRUD.csv"); // renombrar archivo temporal
+        archivo.close();
+        archivo_temp.close();
+        remove("CRUD.csv");
+        rename("temp.csv", "CRUD.csv");
     } else {
         cout << "Error al abrir el archivo" << endl;
         exit(1);
     }
-    if (!encontrado) { // si no se encuentra la tarjeta
-        cout << "Tarjeta no encontrada, regresando";
+    if (!encontrado) {
+        cout << "Tarjeta no encontrada, regresando al menu principal";
         for (int i = 0; i < 4; i++) {
             sleep(1.5);
             cout << ".";
@@ -293,6 +295,7 @@ void usar_tarjeta() {
         system("cls");
     }
 }
+
 
 //Consultar cliente
 void consultar_cliente(){
@@ -694,11 +697,6 @@ void actualizar_datos(string campo, int campo_num){
         }
         if (encontrado){
             cout << "El dato ha sido actualizado con exito" << endl;
-            cout<<"Regresando al menu principal";
-            for(int i=0;i<4;i++){
-                sleep(1.5);
-                cout<<".";
-            }
         } else {
             cout << "No se encontro el cliente" << endl;
         }
@@ -714,14 +712,13 @@ void actualizar_datos(string campo, int campo_num){
 
 // Switch Actualizar Datos
 void switch_actualizar_datos(){
-    int n;
-    do{
     cout << "**************************" << endl;
     cout << "INGRESO A ACTUALIZAR DATOS" << endl;
     cout << "**************************" << endl;
     cout << "Seleccione el dato que desea actualizar: " << endl;
+    int n;
     n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC","6. Salir al menu principal");
-    
+    do{
         switch (n){
         case 1:
             actualizar_datos("el nombre", 0);
@@ -754,7 +751,7 @@ void switch_actualizar_datos(){
         default:
             cout << "Opcion no valida" << endl;
             break;
-        }
+    }
     }while(n!=6);
 }
 

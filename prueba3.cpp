@@ -3,6 +3,8 @@
 #include <string>
 #include <unistd.h> //Para usar la funcion sleep
 #include <cstdlib> //Para usar la funcion cls en windows
+#include <cstdio> //Para usar la funcion remove
+
 using namespace std;
 void titulo(){
     cout<<"\n*****************************************************************"<<endl;
@@ -57,18 +59,31 @@ void ingreso_cliente(){
             cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
             cin>>cvc;
         }
+        archivo << nombres << ";" << apellidos << ";" << cedula << ";" 
+                << numero_tarjeta << ";" << cvc << ";" << limite_consumo;
+        
         string tarjeta_adicional = "";
         string cvc_adicional = "";
         string limite_adicional = "";
-        string consumo_temp_principal = "0";
-        string consumo_temp_adicional = "0";
-        string deuda_total_principal = "0";
-        string deuda_total_adicional = "0";
-        archivo << nombres << ";" << apellidos << ";" << cedula << ";" 
-                << numero_tarjeta << ";" << cvc << ";" << limite_consumo << ";"
-                << tarjeta_adicional << ";" << cvc_adicional << ";" << limite_adicional << ";"
-                << consumo_temp_principal << ";" << consumo_temp_adicional << ";"
-                << deuda_total_principal << ";" << deuda_total_adicional << endl;
+        
+        // Solo añade los campos adicionales si tienen datos
+        if (!tarjeta_adicional.empty()) {
+            archivo << ";" << tarjeta_adicional << ";" << cvc_adicional << ";" << limite_adicional;
+        }
+        
+        archivo << ";" << "0"; // consumo_temp_principal
+        
+        if (!tarjeta_adicional.empty()) {
+            archivo << ";" << "0"; // consumo_temp_adicional
+        }
+        
+        archivo << ";" << "0"; // deuda_total_principal
+        
+        if (!tarjeta_adicional.empty()) {
+            archivo << ";" << "0"; // deuda_total_adicional
+        }
+        
+        archivo << endl;
         archivo.close();
     }else{
         cout << "Error al abrir el archivo" << endl;
@@ -87,7 +102,6 @@ void crear_archivo(){
         exit(1);
   }
 }
-
 
 //Cálculo de consumos
 int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
@@ -157,12 +171,15 @@ void usar_tarjeta() {
                 cout << "Tarjeta encontrada: ";
                 if (partes[4] == to_string(cvc)) { // si el cvc es de la tarjeta principal
                     cout << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl;
+                    cout<<""<<endl;
                     cout << "Fecha de corte: 15 de cada mes" << endl;
                     cout << "Fecha de pago: 30 de cada mes" << endl;
+                    cout<<""<<endl;
                     cout << "Beneficios: " << endl;
                     cout << "- 10% de descuento en Osaka, Casa Res, Bocatto da Fiorentino, Friday's" << endl;
                     cout << "- 15% de descuento en tu proximo vuelo con LATAM Airlines" << endl;
                     cout << "- 20% de descuento en consultas medicas en METRORED" << endl;
+                    cout<<""<<endl;
                     int n1;
                     do {
                         cout << "\nEscoja el tipo de consumo: " << endl;
@@ -190,7 +207,7 @@ void usar_tarjeta() {
                                     sleep(1.5);
                                     cout << ".";
                                 }
-                                system("cls");
+                                system("clear");
                                 break;
                             default:
                                 cout << "Opcion no valida" << endl;
@@ -213,12 +230,15 @@ void usar_tarjeta() {
                     }
                 } else {
                     cout << partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
+                    cout<<""<<endl;
                     cout << "Fecha de corte: 10 de cada mes" << endl;
                     cout << "Fecha de pago: 25 de cada mes" << endl;
+                    cout<<""<<endl;
                     cout << "Beneficios: " << endl;
                     cout << "- 10% de descuento en Chez Jerome, Fogo de Chao, Carmine" << endl;
                     cout << "- 15% de descuento en tu proximo vuelo con AVIANCA" << endl;
                     cout << "- 20% de descuento en consultas medicas en SIME USFQ" << endl;
+                    cout<<""<<endl;
                     int n2;
                     do {
                         cout << "\nEscoja el tipo de consumo: " << endl;
@@ -246,7 +266,7 @@ void usar_tarjeta() {
                                     sleep(1.5);
                                     cout << ".";
                                 }
-                                system("cls");
+                                system("clear");
                                 break;
                             default:
                                 cout << "Opcion no valida" << endl;
@@ -276,10 +296,22 @@ void usar_tarjeta() {
                          << partes[9] << ";" << partes[10] << ";" << partes[11] << ";"
                          << partes[12] << endl; // escribir la linea
         }
-        archivo.close(); // cerrar archivo
-        archivo_temp.close(); // cerrar archivo temporal
-        remove("CRUD.csv"); // eliminar archivo original
-        rename("temp.csv", "CRUD.csv"); // renombrar archivo temporal
+        archivo.close();
+        archivo_temp.close();
+
+        ifstream archivo_temp_final("temp.csv");
+        ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
+
+        if (archivo_temp_final.is_open() && archivo_final.is_open()) {
+            archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
+            archivo_temp_final.close();
+            archivo_final.close();
+            remove("temp.csv");  // Elimina el archivo temporal
+        } else {
+            cout << "Error al abrir los archivos para la actualización final" << endl;
+        }
+
+        
     } else {
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -290,7 +322,7 @@ void usar_tarjeta() {
             sleep(1.5);
             cout << ".";
         }
-        system("cls");
+        system("clear");
     }
 }
 
@@ -347,7 +379,7 @@ void consultar_cliente(){
                             cout<<"Tarjetas registradas: "<<endl;
                             cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
                             cout<<"Deuda de tarjeta principal: $"<<partes[11]<<endl;
-                            if(partes[6] != ""){
+                            if(partes[6] != "0"){
                                 cout<<"Numero de tarjeta adicional: "<<partes[6]<<endl;
                                 cout<<"Deuda de tarjeta adicional: $"<<partes[12]<<endl;
                             }
@@ -399,10 +431,9 @@ void consultar_cliente(){
             }
             system("cls");
         }
-        archivo.close(); 
-        archivo_temp.close(); 
-        remove("CRUD.csv");
-        rename("temp.csv","CRUD.csv");
+        archivo.close(); // cerrar archivo
+        archivo_temp.close(); // cerrar archivo temporal
+        
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -446,7 +477,9 @@ void pagar_deudas(){
                 encontrado = true;
                 cout<<"Cedula encontrada "<<endl;
                 cout<<"Tarjeta principal: "<<partes[3]<<endl;
-                cout<<"Tarjeta adicional: "<<partes[6]<<endl;
+                if(partes[6] != "0"){
+                    cout<<"Tarjeta adicional: "<<partes[6]<<endl;
+                }
                 cout<<"Tutor de la tarjeta: "<<partes[0]<<" "<<partes[1]<<endl;
                 cout<<"Ingrese el CVC de la tarjeta a pagar: ";
                 cin>>cvc;
@@ -454,7 +487,7 @@ void pagar_deudas(){
                     cout<<"Este CVC corresponde a la tarjeta principal"<<endl;
                     do{
                     cout<<"\n*****************************************"<<endl;
-                    cout<<"La deuda total es de: $"<<2000-stoi(partes[5])<<endl;
+                    cout<<"La deuda total es de: $"<<partes[11]<<endl;
                     cout<<"*****************************************"<<endl;
                     cout<<"Como desea pagar la deuda?"<<endl;
                     cout<<"1. Pagar la totalidad"<<endl;
@@ -469,54 +502,59 @@ void pagar_deudas(){
                                 sleep(1.5);
                                 cout<<".";
                             }
-                            partes[11] = "";
+                            partes[11] = "0";
                             partes[5] = "2000";
+                            cout<<endl;
+                            cout<<"Pago realizado con exito"<<endl;
                             break;
                         case 2:
                             pago_minimo=stoi(partes[5])*0.05;
-                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo;
+                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
                             if(monto<pago_minimo){
-                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito";
+                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[11])-monto;
                                 pagar=adeudado+adeudado*0.025;
-                                cout<<"Pagando monto ingresado"<<endl;
+                                cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
-                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                cout<<"Calculando nueva deuda con intereses";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde que ha entrado a buro de credito, su historial crediticio se vera afectado"<<endl;
                                 partes[11]=to_string(pagar);
                                 partes[5]="2000";
                             }else{
-                                cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito";
+                                cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[11])-monto;
                                 pagar=adeudado+adeudado*0.0232;
-                                cout<<"Pagando monto ingresado"<<endl;
+                                cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
-                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                cout<<"Calculando nueva deuda con intereses";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde pagar al banco puntualmente"<<endl;
                                 partes[11]=to_string(pagar);
                                 partes[5]="2000";
                             }
-                            
                             break;
                         case 3:
                             cout<<"Regresando al menu principal";
@@ -539,7 +577,7 @@ void pagar_deudas(){
                         cout<<"Este CVC corresponde a la tarjeta adicional"<<endl;
                         do{
                     cout<<"\n*****************************************"<<endl;
-                    cout<<"La deuda total es de: $"<<2000-stoi(partes[8])<<endl;
+                    cout<<"La deuda total es de: $"<<partes[12]<<endl;//REVISAR ESTO
                     cout<<"*****************************************"<<endl;
                     cout<<"Como desea pagar la deuda?"<<endl;
                     cout<<"1. Pagar la totalidad"<<endl;
@@ -554,25 +592,25 @@ void pagar_deudas(){
                                 sleep(1.5);
                                 cout<<".";
                             }
-                            partes[12] = "";
+                            partes[12] = "0";
                             partes[8] = "2000";
                             break;
                         case 2:
                             pago_minimo=stoi(partes[8])*0.05;
-                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo;
+                            cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
                             if(monto<pago_minimo){
-                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito";
+                                cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.025;
-                                cout<<"Pagando monto ingresado"<<endl;
+                                cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
                                 cout<<"Pago realizado con exito"<<endl;
-                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                cout<<"Calculando nueva deuda con intereses";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
@@ -585,13 +623,14 @@ void pagar_deudas(){
                                 cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito";
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.0232;
-                                cout<<"Pagando monto ingresado"<<endl;
+                                cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
-                                cout<<"Calculando nueva deuda con intereses"<<endl;
+                                cout<<"Calculando nueva deuda con intereses";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
                                     cout<<".";
@@ -694,10 +733,10 @@ void actualizar_datos(string campo, int campo_num){
         }
         if (encontrado){
             cout << "El dato ha sido actualizado con exito" << endl;
-            cout<<"Regresando al menu principal";
-            for(int i=0;i<4;i++){
+            cout << "Regresando al menu principal";
+            for (int i = 0; i < 4; i++){
                 sleep(1.5);
-                cout<<".";
+                cout << ".";
             }
         } else {
             cout << "No se encontro el cliente" << endl;
@@ -721,7 +760,6 @@ void switch_actualizar_datos(){
     cout << "**************************" << endl;
     cout << "Seleccione el dato que desea actualizar: " << endl;
     n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC","6. Salir al menu principal");
-    
         switch (n){
         case 1:
             actualizar_datos("el nombre", 0);
@@ -754,7 +792,7 @@ void switch_actualizar_datos(){
         default:
             cout << "Opcion no valida" << endl;
             break;
-        }
+    }
     }while(n!=6);
 }
 
@@ -802,6 +840,7 @@ void eliminar_cliente(){
 //Menu Principal
 void menu(){
     int n;
+    crear_archivo();
     do
     {
         titulo();

@@ -3,6 +3,8 @@
 #include <string>
 #include <unistd.h> //Para usar la funcion sleep
 #include <cstdlib> //Para usar la funcion cls en windows
+#include <cstdio>
+
 using namespace std;
 void titulo(){
     cout<<"\n*****************************************************************"<<endl;
@@ -61,9 +63,9 @@ void ingreso_cliente(){
         string cvc_adicional = "";
         string limite_adicional = "";
         string consumo_temp_principal = "0";
-        string consumo_temp_adicional = "0";
+        string consumo_temp_adicional = "0"; //duplica
         string deuda_total_principal = "0";
-        string deuda_total_adicional = "0";
+        string deuda_total_adicional = "0"; //duplica
         archivo << nombres << ";" << apellidos << ";" << cedula << ";" 
                 << numero_tarjeta << ";" << cvc << ";" << limite_consumo << ";"
                 << tarjeta_adicional << ";" << cvc_adicional << ";" << limite_adicional << ";"
@@ -87,7 +89,6 @@ void crear_archivo(){
         exit(1);
   }
 }
-
 
 //Cálculo de consumos
 int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
@@ -190,7 +191,7 @@ void usar_tarjeta() {
                                     sleep(1.5);
                                     cout << ".";
                                 }
-                                system("cls");
+                                system("clear");
                                 break;
                             default:
                                 cout << "Opcion no valida" << endl;
@@ -246,7 +247,7 @@ void usar_tarjeta() {
                                     sleep(1.5);
                                     cout << ".";
                                 }
-                                system("cls");
+                                system("clear");
                                 break;
                             default:
                                 cout << "Opcion no valida" << endl;
@@ -276,10 +277,22 @@ void usar_tarjeta() {
                          << partes[9] << ";" << partes[10] << ";" << partes[11] << ";"
                          << partes[12] << endl; // escribir la linea
         }
-        archivo.close(); // cerrar archivo
-        archivo_temp.close(); // cerrar archivo temporal
-        remove("CRUD.csv"); // eliminar archivo original
-        rename("temp.csv", "CRUD.csv"); // renombrar archivo temporal
+        archivo.close();
+        archivo_temp.close();
+
+        ifstream archivo_temp_final("temp.csv");
+        ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
+
+        if (archivo_temp_final.is_open() && archivo_final.is_open()) {
+            archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
+            archivo_temp_final.close();
+            archivo_final.close();
+            remove("temp.csv");  // Elimina el archivo temporal
+        } else {
+            cout << "Error al abrir los archivos para la actualización final" << endl;
+        }
+
+        
     } else {
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -290,7 +303,7 @@ void usar_tarjeta() {
             sleep(1.5);
             cout << ".";
         }
-        system("cls");
+        system("clear");
     }
 }
 
@@ -399,10 +412,9 @@ void consultar_cliente(){
             }
             system("cls");
         }
-        archivo.close(); 
-        archivo_temp.close(); 
-        remove("CRUD.csv");
-        rename("temp.csv","CRUD.csv");
+        archivo.close(); // cerrar archivo
+        archivo_temp.close(); // cerrar archivo temporal
+        
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -694,10 +706,10 @@ void actualizar_datos(string campo, int campo_num){
         }
         if (encontrado){
             cout << "El dato ha sido actualizado con exito" << endl;
-            cout<<"Regresando al menu principal";
-            for(int i=0;i<4;i++){
+            cout << "Regresando al menu principal";
+            for (int i = 0; i < 4; i++){
                 sleep(1.5);
-                cout<<".";
+                cout << ".";
             }
         } else {
             cout << "No se encontro el cliente" << endl;
@@ -721,7 +733,6 @@ void switch_actualizar_datos(){
     cout << "**************************" << endl;
     cout << "Seleccione el dato que desea actualizar: " << endl;
     n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC","6. Salir al menu principal");
-    
         switch (n){
         case 1:
             actualizar_datos("el nombre", 0);
@@ -754,7 +765,7 @@ void switch_actualizar_datos(){
         default:
             cout << "Opcion no valida" << endl;
             break;
-        }
+    }
     }while(n!=6);
 }
 
@@ -802,6 +813,7 @@ void eliminar_cliente(){
 //Menu Principal
 void menu(){
     int n;
+    crear_archivo();
     do
     {
         titulo();
