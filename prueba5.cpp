@@ -6,7 +6,6 @@
 #include <cstdio> //Para usar la funcion remove
 
 using namespace std;
-
 void titulo(){
     cout<<"\n*****************************************************************"<<endl;
     cout<<"*    Bienvenido al sistema de gestion de tarjetas de credito    *"<<endl;
@@ -136,8 +135,6 @@ int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
     return consumo;
 }
 
-
-
 //Tarjeta a usar
 void usar_tarjeta() {
     system("cls");
@@ -248,7 +245,8 @@ void usar_tarjeta() {
                                 partes[9] = to_string(consumo_temp); // reiniciar consumo temporal
                                 partes[5] = to_string(limite_actual);  // actualizar el limite
                             }
-                        }else if(partes[7]==to_string(cvc)){
+                        }else {
+                            if(partes[7]==to_string(cvc)){
                                 cout<<"Este CVC corresponde a la tarjeta adicional"<<endl;
                                 cout << partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
                                 cout<<""<<endl;
@@ -308,7 +306,8 @@ void usar_tarjeta() {
                                     partes[8] = to_string(limite_actual); // actualizar limite
                                 }
                             }
-                        }else{
+                        }
+                    }else{
                         cout << "Este CVC no corresponde a ninguna tarjeta registrada para este cliente" << endl;
                         cout << "¿Desea intentar de nuevo? (1: Sí / 0: No): ";
                         int opcion;
@@ -316,7 +315,7 @@ void usar_tarjeta() {
                         if (opcion == 0) {
                             break;
                         }
-                        }
+                    }
             }
             // Escribir en el archivo temporal
             archivo_temp << partes[0] << ";" << partes[1] << ";" << partes[2] << ";" 
@@ -327,7 +326,7 @@ void usar_tarjeta() {
         }else{
             archivo_temp << linea << endl; // escribir la linea
         }
-        }
+        
         archivo.close();
         archivo_temp.close();
 
@@ -342,8 +341,7 @@ void usar_tarjeta() {
         } else {
             cout << "Error al abrir los archivos para la actualización final" << endl;
         }
-        
-        
+        }
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -374,7 +372,6 @@ void consultar_cliente(){
     cout<<"******************"<<endl;
     long long int cedula, tarjeta_adicional = 0;
     int cvc_adicional, n;
-    bool tarjeta_adicional_ingresada = false;
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
@@ -427,7 +424,6 @@ void consultar_cliente(){
                             }
                             break;
                         case 2:
-                            tarjeta_adicional_ingresada = true;
                             cout<<"Ingrese el numero de la tarjeta adicional: ";
                             cin>>tarjeta_adicional;
                             while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
@@ -476,18 +472,16 @@ void consultar_cliente(){
         }
         archivo.close(); // cerrar archivo
         archivo_temp.close(); // cerrar archivo temporal
-        if(tarjeta_adicional_ingresada){
-            ifstream archivo_temp_final("temp.csv");
-            ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
+        ifstream archivo_temp_final("temp.csv");
+        ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
 
-            if (archivo_temp_final.is_open() && archivo_final.is_open()) {
-                archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
-                archivo_temp_final.close();
-                archivo_final.close();
-                remove("temp.csv");  // Elimina el archivo temporal
-            } else {
-                cout << "Error al abrir los archivos para la actualización final" << endl;
-            }
+        if (archivo_temp_final.is_open() && archivo_final.is_open()) {
+            archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
+            archivo_temp_final.close();
+            archivo_final.close();
+            remove("temp.csv");  // Elimina el archivo temporal
+        } else {
+            cout << "Error al abrir los archivos para la actualización final" << endl;
         }
     }else{
         cout << "Error al abrir el archivo" << endl;
@@ -829,16 +823,8 @@ void actualizar_datos(string campo, int campo_num){
     }
     archivo.close();
     archivo_temp.close();
-    ifstream archivo_temp_final("temp.csv");
-    ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
-    if (archivo_temp_final.is_open() && archivo_final.is_open()) {
-        archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
-        archivo_temp_final.close();
-        archivo_final.close();
-        remove("temp.csv");  // Elimina el archivo temporal
-    } else {
-        cout << "Error al abrir los archivos para la actualización final" << endl;
-    }
+    remove("CRUD.csv");
+    rename("temp.csv", "CRUD.csv");
 }
 
 // Switch Actualizar Datos

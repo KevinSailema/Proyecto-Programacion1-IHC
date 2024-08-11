@@ -374,7 +374,6 @@ void consultar_cliente(){
     cout<<"******************"<<endl;
     long long int cedula, tarjeta_adicional = 0;
     int cvc_adicional, n;
-    bool tarjeta_adicional_ingresada = false;
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
@@ -427,7 +426,6 @@ void consultar_cliente(){
                             }
                             break;
                         case 2:
-                            tarjeta_adicional_ingresada = true;
                             cout<<"Ingrese el numero de la tarjeta adicional: ";
                             cin>>tarjeta_adicional;
                             while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
@@ -476,19 +474,7 @@ void consultar_cliente(){
         }
         archivo.close(); // cerrar archivo
         archivo_temp.close(); // cerrar archivo temporal
-        if(tarjeta_adicional_ingresada){
-            ifstream archivo_temp_final("temp.csv");
-            ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
-
-            if (archivo_temp_final.is_open() && archivo_final.is_open()) {
-                archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
-                archivo_temp_final.close();
-                archivo_final.close();
-                remove("temp.csv");  // Elimina el archivo temporal
-            } else {
-                cout << "Error al abrir los archivos para la actualización final" << endl;
-            }
-        }
+    
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);

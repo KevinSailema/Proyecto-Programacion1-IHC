@@ -135,7 +135,7 @@ int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
     return consumo;
 }
 
-//Tarjeta a usar
+// Tarjeta a usar
 void usar_tarjeta() {
     system("cls");
     cout << "\n**************" << endl;
@@ -144,13 +144,14 @@ void usar_tarjeta() {
     int cvc, consumo, consumo_temp = 0, resp;
     long long int cedula;
     bool encontrado = false, cvc_correcto = false;
-    cout<<"Ingrese la cedula del tutor de la/las tarjetas: ";
-    cin>>cedula;
-    while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, intentelo de nuevo: ";
-        cin>>cedula;
-        cout<<endl;
+    cout << "Ingrese la cedula del tutor de la/las tarjetas: ";
+    cin >> cedula;
+    while (cedula <= 100000000 || cedula >= 2500000000) {
+        cout << "El número de cedula debe tener diez dígitos, intentelo de nuevo: ";
+        cin >> cedula;
+        cout << endl;
     }
+
     ifstream archivo("CRUD.csv"); // abrir archivo
     ofstream archivo_temp("temp.csv"); // abrir archivo temporal
     if (archivo.is_open() && archivo_temp.is_open()) { // si se abren los archivos
@@ -170,14 +171,14 @@ void usar_tarjeta() {
                 }
             }
 
-            if(partes[2]==to_string(cedula)){
-                encontrado=true;
+            if (partes[2] == to_string(cedula)) {
+                encontrado = true;
                 cout << "Cliente encontrado: " << partes[0] << " " << partes[1] << endl;
                 cout << "Tarjeta principal: " << partes[3] << endl;
                 if (partes[6] != "0") {
                     cout << "Tarjeta adicional: " << partes[6] << endl;
                 }
-                while(!cvc_correcto){
+                while (!cvc_correcto) {
                     cout << "Ingrese el CVC de la tarjeta a usar: ";
                     cin >> cvc;
                     while (cvc >= 1000 || cvc < 100) {
@@ -186,57 +187,57 @@ void usar_tarjeta() {
                     }
                     if (partes[4] == to_string(cvc) || partes[7] == to_string(cvc)) { // si el cvc es igual al ingresado
                         cvc_correcto = true;
-                        if(partes[4]==to_string(cvc)){
-                            cout<<"Este CVC corresponde a la tarjeta principal"<<endl;
+                        if (partes[4] == to_string(cvc)) {
+                            cout << "Este CVC corresponde a la tarjeta principal" << endl;
                             cout << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl;
-                            cout<<""<<endl;
+                            cout << endl;
                             cout << "Fecha de corte: 15 de cada mes" << endl;
                             cout << "Fecha de pago: 30 de cada mes" << endl;
-                            cout<<""<<endl;
+                            cout << endl;
                             cout << "Beneficios: " << endl;
                             cout << "- 10% de descuento en Osaka, Casa Res, Bocatto da Fiorentino, Friday's" << endl;
                             cout << "- 15% de descuento en tu proximo vuelo con LATAM Airlines" << endl;
                             cout << "- 20% de descuento en consultas medicas en METRORED" << endl;
                             int n1;
                             do {
-                            cout << "\nEscoja el tipo de consumo: " << endl;
-                            cout << "1. Consumo en restaurantes" << endl;
-                            cout << "2. Consumo en vuelos" << endl;
-                            cout << "3. Consumo en consultas medicas" << endl;
-                            cout << "4. Salir al menu principal" << endl;
-                            cin >> n1;
-                            switch (n1) {
-                                case 1:
-                                    consumo = calcular_consumos(0.1, 50, stoi(partes[5])); // calcular el consumo
-                                    consumo_temp += consumo; // sumar el consumo al total
-                                    break;
-                                case 2:
-                                    consumo = calcular_consumos(0.15, 500, stoi(partes[5]));
-                                    consumo_temp += consumo;
-                                    break;
-                                case 3:
-                                    consumo = calcular_consumos(0.2, 40, stoi(partes[5]));
-                                    consumo_temp += consumo;
-                                    break;
-                                case 4:
-                                    cout << "Regresando al menu principal";
-                                    for (int i = 0; i < 4; i++) {
-                                        sleep(1.5);
-                                        cout << ".";
-                                    }
-                                    system("cls");
-                                    break;
-                                default:
-                                    cout << "Opcion no valida" << endl;
-                                    break;
-                            }
-                            cout << "Desea registrar otro consumo? (1. Si / 2. No): "; // devolver registro
-                            cin >> resp;
-                            while (resp != 1 && resp != 2) {
-                                cout << "Opcion no valida, intentelo de nuevo: ";
+                                cout << "\nEscoja el tipo de consumo: " << endl;
+                                cout << "1. Consumo en restaurantes" << endl;
+                                cout << "2. Consumo en vuelos" << endl;
+                                cout << "3. Consumo en consultas medicas" << endl;
+                                cout << "4. Salir al menu principal" << endl;
+                                cin >> n1;
+                                switch (n1) {
+                                    case 1:
+                                        consumo = calcular_consumos(0.1, 50, stoi(partes[5])); // calcular el consumo
+                                        consumo_temp += consumo; // sumar el consumo al total
+                                        break;
+                                    case 2:
+                                        consumo = calcular_consumos(0.15, 500, stoi(partes[5]));
+                                        consumo_temp += consumo;
+                                        break;
+                                    case 3:
+                                        consumo = calcular_consumos(0.2, 40, stoi(partes[5]));
+                                        consumo_temp += consumo;
+                                        break;
+                                    case 4:
+                                        cout << "Regresando al menu principal";
+                                        for (int i = 0; i < 4; i++) {
+                                            sleep(1.5);
+                                            cout << ".";
+                                        }
+                                        system("cls");
+                                        break;
+                                    default:
+                                        cout << "Opcion no valida" << endl;
+                                        break;
+                                }
+                                cout << "Desea registrar otro consumo? (1. Si / 2. No): "; // devolver registro
                                 cin >> resp;
-                            }
-                        } while (n1 != 4 && resp == 1); // mientras no se quiera salir y se quiera registrar otro consumo
+                                while (resp != 1 && resp != 2) {
+                                    cout << "Opcion no valida, intentelo de nuevo: ";
+                                    cin >> resp;
+                                }
+                            } while (n1 != 4 && resp == 1); // mientras no se quiera salir y se quiera registrar otro consumo
                             if (consumo_temp > 0) { // si hay un consumo
                                 int consumo_total = stoi(partes[11]) + consumo_temp; // sumar el consumo al total
                                 int limite_actual = stoi(partes[5]) - consumo_temp; // restar el consumo al limite
@@ -245,14 +246,14 @@ void usar_tarjeta() {
                                 partes[9] = to_string(consumo_temp); // reiniciar consumo temporal
                                 partes[5] = to_string(limite_actual);  // actualizar el limite
                             }
-                        }else {
-                            if(partes[7]==to_string(cvc)){
-                                cout<<"Este CVC corresponde a la tarjeta adicional"<<endl;
+                        } else {
+                            if (partes[7] == to_string(cvc)) {
+                                cout << "Este CVC corresponde a la tarjeta adicional" << endl;
                                 cout << partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
-                                cout<<""<<endl;
+                                cout << endl;
                                 cout << "Fecha de corte: 10 de cada mes" << endl;
                                 cout << "Fecha de pago: 25 de cada mes" << endl;
-                                cout<<""<<endl;
+                                cout << endl;
                                 cout << "Beneficios: " << endl;
                                 cout << "- 10% de descuento en Chez Jerome, Fogo de Chao, Carmine" << endl;
                                 cout << "- 15% de descuento en tu proximo vuelo con AVIANCA" << endl;
@@ -301,66 +302,36 @@ void usar_tarjeta() {
                                     int consumo_total = stoi(partes[12]) + consumo_temp;
                                     int limite_actual = stoi(partes[8]) - consumo_temp;
 
-                                    partes[12] = to_string(consumo_total); // actualizar deuda
-                                    partes[10] = to_string(consumo_temp); // reiniciar consumo temporal
-                                    partes[8] = to_string(limite_actual); // actualizar limite
+                                    partes[12] = to_string(consumo_total);
+                                    partes[10] = to_string(consumo_temp);
+                                    partes[8] = to_string(limite_actual);
                                 }
                             }
                         }
-                    }else{
-                        cout << "Este CVC no corresponde a ninguna tarjeta registrada para este cliente" << endl;
-                        cout << "¿Desea intentar de nuevo? (1: Sí / 0: No): ";
-                        int opcion;
-                        cin >> opcion;
-                        if (opcion == 0) {
-                            break;
-                        }
+                    } else {
+                        cout << "CVC incorrecto. Por favor, intentelo de nuevo." << endl;
                     }
+                }
             }
-            // Escribir en el archivo temporal
-            archivo_temp << partes[0] << ";" << partes[1] << ";" << partes[2] << ";" 
-                        << partes[3] << ";" << partes[4] << ";" << partes[5] << ";"
-                        << partes[6] << ";" << partes[7] << ";" << partes[8] << ";"
-                        << partes[9] << ";" << partes[10] << ";" << partes[11] << ";"
-                        << partes[12] << endl; // escribir la linea
-        }else{
-            archivo_temp << linea << endl; // escribir la linea
+            archivo_temp << partes[0];
+            for (int j = 1; j < 13; j++) {
+                archivo_temp << ";" << partes[j];
+            }
+            archivo_temp << "\n";
         }
-        
         archivo.close();
         archivo_temp.close();
-
-        ifstream archivo_temp_final("temp.csv");
-        ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
-
-        if (archivo_temp_final.is_open() && archivo_final.is_open()) {
-            archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
-            archivo_temp_final.close();
-            archivo_final.close();
-            remove("temp.csv");  // Elimina el archivo temporal
+        
+        if (encontrado) {
+            remove("CRUD.csv"); // eliminar archivo original
+            rename("temp.csv", "CRUD.csv"); // renombrar archivo temporal como original
+            cout << "Consumos registrados correctamente.\n";
         } else {
-            cout << "Error al abrir los archivos para la actualización final" << endl;
+            remove("temp.csv"); // eliminar archivo temporal si no se encontró el cliente
+            cout << "Cliente no encontrado.\n";
         }
-        }
-    }else{
-        cout << "Error al abrir el archivo" << endl;
-        exit(1);
-    }
-    if(!encontrado){
-        cout<<"Cliente no encontrado, regresando al menu principal";
-        for(int i=0;i<4;i++){
-            sleep(1.5);
-            cout<<".";
-        }
-        system("cls");
-    }
-    if (!cvc_correcto) { // si no se encuentra la tarjeta
-        cout << "Tarjeta no encontrada, regresando";
-        for (int i = 0; i < 4; i++) {
-            sleep(1.5);
-            cout << ".";
-        }
-        system("cls");
+    } else {
+        cout << "No se pudo abrir el archivo.\n";
     }
 }
 
@@ -457,10 +428,10 @@ void consultar_cliente(){
                             break;
                     }
                 } while (n!=4);
-                archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl;
             } else {
                 archivo_temp<<linea<<endl;
             }
+            archivo_temp<<partes[0]<<";"<<partes[1]<<";"<<partes[2]<<";"<<partes[3]<<";"<<partes[4]<<";"<<partes[5]<<";"<<partes[6]<<";"<<partes[7]<<";"<<partes[8]<<";"<<partes[9]<<";"<<partes[10]<<";"<<partes[11]<<";"<<partes[12]<<endl;
         }
         if(!encontrado){ // Si no encuentra la cedula, imprime que no se encontró
             cout<<"Cliente no encontrado, regresando al menu principal";
@@ -473,6 +444,17 @@ void consultar_cliente(){
         archivo.close(); // cerrar archivo
         archivo_temp.close(); // cerrar archivo temporal
         
+        ifstream archivo_temp_final("temp.csv");
+        ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
+
+        if (archivo_temp_final.is_open() && archivo_final.is_open()) {
+            archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
+            archivo_temp_final.close();
+            archivo_final.close();
+            remove("temp.csv");  // Elimina el archivo temporal
+        } else {
+            cout << "Error al abrir los archivos para la actualización final" << endl;
+        }
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);
