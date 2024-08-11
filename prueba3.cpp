@@ -207,7 +207,7 @@ void usar_tarjeta() {
                                     sleep(1.5);
                                     cout << ".";
                                 }
-                                system("clear");
+                                system("cls");
                                 break;
                             default:
                                 cout << "Opcion no valida" << endl;

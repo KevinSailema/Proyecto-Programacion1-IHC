@@ -238,11 +238,11 @@ void usar_tarjeta() {
                             }
                         } while (n1 != 4 && resp == 1); // mientras no se quiera salir y se quiera registrar otro consumo
                             if (consumo_temp > 0) { // si hay un consumo
-                                int consumo_actual = stoi(partes[9]) + consumo_temp; // sumar el consumo al total
+                                int consumo_total = stoi(partes[11]) + consumo_temp; // sumar el consumo al total
                                 int limite_actual = stoi(partes[5]) - consumo_temp; // restar el consumo al limite
 
-                                partes[11] = to_string(consumo_actual); // actualizar el deuda
-                                partes[9] = to_string(0); // reiniciar consumo temporal
+                                partes[11] = to_string(consumo_total); // actualizar la deuda
+                                partes[9] = to_string(consumo_temp); // reiniciar consumo temporal
                                 partes[5] = to_string(limite_actual);  // actualizar el limite
                             }
                         }else {
@@ -298,11 +298,11 @@ void usar_tarjeta() {
                                     }
                                 } while (n2 != 4 && resp == 1);
                                 if (consumo_temp > 0) {
-                                    int consumo_actual = stoi(partes[10]) + consumo_temp;
+                                    int consumo_total = stoi(partes[12]) + consumo_temp;
                                     int limite_actual = stoi(partes[8]) - consumo_temp;
 
-                                    partes[12] = to_string(consumo_actual); // actualizar deuda
-                                    partes[10] = to_string(0); // reiniciar consumo temporal
+                                    partes[12] = to_string(consumo_total); // actualizar deuda
+                                    partes[10] = to_string(consumo_temp); // reiniciar consumo temporal
                                     partes[8] = to_string(limite_actual); // actualizar limite
                                 }
                             }
@@ -555,7 +555,7 @@ void pagar_deudas(){
                             cout<<"Pago realizado con exito"<<endl;
                             break;
                         case 2:
-                            pago_minimo=stoi(partes[5])*0.05;
+                            pago_minimo=stoi(partes[11])*0.05;
                             cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
@@ -643,7 +643,7 @@ void pagar_deudas(){
                             partes[8] = "2000";
                             break;
                         case 2:
-                            pago_minimo=stoi(partes[8])*0.05;
+                            pago_minimo=stoi(partes[12])*0.05;
                             cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
