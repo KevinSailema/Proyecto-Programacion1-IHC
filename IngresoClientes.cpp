@@ -44,20 +44,19 @@ void ingreso_cliente(){
         cout<<"Ingrese su numero de cedula: ";
         cin>>cedula;
         while(cedula<=100000000||cedula>=2500000000){
-            cout<<"Número de cedula incorrecto, ingrese nuevamente: ";
+            cout<<"El numero de cedula debe tener diez digitos, intentelo de nuevo: ";
             cin>>cedula;
-            cout<<endl;
         }
-        cout<<"Ingrese el número de la tarjeta: ";
+        cout<<"Ingrese el numero de la tarjeta: ";
         cin>>numero_tarjeta;
         while(numero_tarjeta<=1000000000000000||numero_tarjeta>=10000000000000000){
-            cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+            cout<<"El numero de tarjeta debe tener 16 digitos, intentelo de nuevo: ";
             cin>>numero_tarjeta;
         }
         cout<<"Ingrese el CVC de la tarjeta: ";
         cin>>cvc;
         while (cvc>=1000 || cvc<100){
-            cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+            cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
             cin>>cvc;
         }
         archivo << nombres << ";" << apellidos << ";" << cedula << ";" 
@@ -86,6 +85,13 @@ void ingreso_cliente(){
         
         archivo << endl;
         archivo.close();
+        cout<<"Cliente ingresado con exito"<<endl;
+        cout<<"Regresando al menu principal";
+        for(int i=0;i<4;i++){
+            sleep(1.5);
+            cout<<".";
+        }
+        system("cls");
     }else{
         cout << "Error al abrir el archivo" << endl;
         exit(1);
@@ -108,29 +114,31 @@ void crear_archivo(){
 int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
     int consumo;
     int meses;
-    cout<<"Ingrese el monto del consumo: ";
+    cout<<"Ingrese el monto del consumo: $";
     cin>>consumo;
     while(consumo<=0){
         cout<<"El monto del consumo debe ser mayor a 0, intentelo de nuevo: ";
         cin>>consumo;
     }
-    if(consumo >= limite_descuento && consumo < 2000){
+    if(consumo >= limite_descuento && consumo <= 2000){
         consumo = consumo-consumo*(descuento);
         cout<<"A cuantos meses desea diferir? (1-3): ";
         cin>>meses;
         while(meses<1 || meses>3){
-            cout<<"El número de meses debe ser entre 1 y 3, intentelo de nuevo: ";
+            cout<<"El numero de meses debe ser entre 1 y 3, intentelo de nuevo: ";
             cin>>meses;
         }
         consumo = consumo/meses;
-        cout<<"El monto a pagar por mes es de: $"<<consumo<<" (diferido a "<<meses<< " mes/es)"<<endl;
+        cout<<"El monto a pagar por mes aplicando descuento del "<<descuento*100<<"% es de: $"<<consumo<<" (diferido a "<<meses<< " mes/es)"<<endl;
     }else{
-        if (consumo >= limite_credito){
+        if (consumo > limite_credito){
             cout<<"El monto excede el limite de credito ("<<limite_credito<<"), intentelo de nuevo"<<endl;
         }else{
+            cout<<endl;
             cout<<"No se aplica descuento"<<endl;
             cout<<"El monto minimo para aplicar descuento es de: $"<<limite_descuento<<endl;
             cout<<"El monto a pagar es de: $"<<consumo<<endl;
+            cout<<endl;
         }
     }
     return consumo;
@@ -144,13 +152,14 @@ void usar_tarjeta() {
     cout << "\n**************" << endl;
     cout << "USO DE TARJETAS" << endl;
     cout << "**************" << endl;
-    int cvc, consumo, consumo_temp = 0, resp;
+    int cvc, resp;
+    int consumo, consumo_temp = 0;
     long long int cedula;
     bool encontrado = false, cvc_correcto = false;
-    cout<<"Ingrese la cedula del tutor de la/las tarjetas: ";
+    cout<<"Ingrese la cedula del tutor de la(s) tarjetas: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, intentelo de nuevo: ";
+        cout<<"El numero de cedula debe tener diez digitos, intentelo de nuevo: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -175,31 +184,35 @@ void usar_tarjeta() {
 
             if(partes[2]==to_string(cedula)){
                 encontrado=true;
+                cout<<endl;
                 cout << "Cliente encontrado: " << partes[0] << " " << partes[1] << endl;
                 cout << "Tarjeta principal: " << partes[3] << endl;
                 if (partes[6] != "0") {
                     cout << "Tarjeta adicional: " << partes[6] << endl;
                 }
+                cout << endl;
                 while(!cvc_correcto){
                     cout << "Ingrese el CVC de la tarjeta a usar: ";
                     cin >> cvc;
                     while (cvc >= 1000 || cvc < 100) {
-                        cout << "El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                        cout << "El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                         cin >> cvc;
                     }
                     if (partes[4] == to_string(cvc) || partes[7] == to_string(cvc)) { // si el cvc es igual al ingresado
                         cvc_correcto = true;
                         if(partes[4]==to_string(cvc)){
-                            cout<<"Este CVC corresponde a la tarjeta principal"<<endl;
-                            cout << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl;
+                            cout<<endl;
+                            cout<<"Este CVC corresponde a la tarjeta principal de "<<partes[0]<<" "<<partes[1]<<endl;
+                            cout << "Numero de tarjeta: " << partes[3] << " (Limite de credito: $" << stoi(partes[5]) << ")" << endl;
                             cout<<""<<endl;
+                            cout<<"Deuda total: $"<<partes[11]<<endl;
                             cout << "Fecha de corte: 15 de cada mes" << endl;
                             cout << "Fecha de pago: 30 de cada mes" << endl;
                             cout<<""<<endl;
                             cout << "Beneficios: " << endl;
-                            cout << "- 10% de descuento en Osaka, Casa Res, Bocatto da Fiorentino, Friday's" << endl;
-                            cout << "- 15% de descuento en tu proximo vuelo con LATAM Airlines" << endl;
-                            cout << "- 20% de descuento en consultas medicas en METRORED" << endl;
+                            cout << "- Por consumos desde $50, 10% de descuento en Osaka, Casa Res, Bocatto da Fiorentino, Friday's" << endl;
+                            cout << "- Por consumos desde $500, 15% de descuento en tu proximo vuelo con LATAM Airlines" << endl;
+                            cout << "- Por consumos desde $40, 20% de descuento en consultas medicas en METRORED" << endl;
                             int n1;
                             do {
                             cout << "\nEscoja el tipo de consumo: " << endl;
@@ -207,6 +220,7 @@ void usar_tarjeta() {
                             cout << "2. Consumo en vuelos" << endl;
                             cout << "3. Consumo en consultas medicas" << endl;
                             cout << "4. Salir al menu principal" << endl;
+                            cout << "Ingrese la opcion deseada: "; 
                             cin >> n1;
                             switch (n1) {
                                 case 1:
@@ -233,11 +247,14 @@ void usar_tarjeta() {
                                     cout << "Opcion no valida" << endl;
                                     break;
                             }
-                            cout << "Desea registrar otro consumo? (1. Si / 2. No): "; // devolver registro
-                            cin >> resp;
-                            while (resp != 1 && resp != 2) {
-                                cout << "Opcion no valida, intentelo de nuevo: ";
+                            if(n1!=4){
+                                cout << "Desea registrar otro consumo? (1. Si / 2. No): ";
                                 cin >> resp;
+                                while (resp != 1 && resp != 2) {
+                                    cout << "Opcion no valida, intentelo de nuevo: ";
+                                    cin >> resp;
+                                }
+
                             }
                         } while (n1 != 4 && resp == 1); // mientras no se quiera salir y se quiera registrar otro consumo
                             if (consumo_temp > 0) { // si hay un consumo
@@ -249,16 +266,17 @@ void usar_tarjeta() {
                                 partes[5] = to_string(limite_actual);  // actualizar el limite
                             }
                         }else if(partes[7]==to_string(cvc)){
-                                cout<<"Este CVC corresponde a la tarjeta adicional"<<endl;
-                                cout << partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
+                                cout<<"Este CVC corresponde a la tarjeta adicional de "<<partes[0]<<" "<<partes[1]<<endl;
+                                cout << "Numero de tarjeta: " <<partes[6] << " (Limite de credito: $" << stoi(partes[8]) << ")" << endl;
                                 cout<<""<<endl;
+                                cout<<"Deuda total: $"<<partes[12]<<endl;
                                 cout << "Fecha de corte: 10 de cada mes" << endl;
                                 cout << "Fecha de pago: 25 de cada mes" << endl;
                                 cout<<""<<endl;
                                 cout << "Beneficios: " << endl;
-                                cout << "- 10% de descuento en Chez Jerome, Fogo de Chao, Carmine" << endl;
-                                cout << "- 15% de descuento en tu proximo vuelo con AVIANCA" << endl;
-                                cout << "- 20% de descuento en consultas medicas en SIME USFQ" << endl;
+                                cout << "- Por consumos desde $50, 10% de descuento en Chez Jerome, Fogo de Chao, Carmine" << endl;
+                                cout << "- Por consumos desde $500, 15% de descuento en tu proximo vuelo con AVIANCA" << endl;
+                                cout << "- Por consumos desde $40, 20% de descuento en consultas medicas en SIME USFQ" << endl;
                                 int n2;
                                 do {
                                     cout << "\nEscoja el tipo de consumo: " << endl;
@@ -266,6 +284,7 @@ void usar_tarjeta() {
                                     cout << "2. Consumo en vuelos" << endl;
                                     cout << "3. Consumo en consultas medicas" << endl;
                                     cout << "4. Salir al menu principal" << endl;
+                                    cout<< "Ingrese la opcion deseada: ";
                                     cin >> n2;
                                     switch (n2) {
                                         case 1:
@@ -292,11 +311,15 @@ void usar_tarjeta() {
                                             cout << "Opcion no valida" << endl;
                                             break;
                                     }
-                                    cout << "Desea registrar otro consumo? (1. Si / 2. No): ";
-                                    cin >> resp;
-                                    while (resp != 1 && resp != 2) {
-                                        cout << "Opcion no valida, intentelo de nuevo: ";
+                                    if(n2!=4){
+                                        cout<<endl;
+                                        cout << "Desea registrar otro consumo? (1. Si / 2. No): ";
                                         cin >> resp;
+                                        while (resp != 1 && resp != 2) {
+                                            cout << "Opcion no valida, intentelo de nuevo: ";
+                                            cin >> resp;
+                                        }
+
                                     }
                                 } while (n2 != 4 && resp == 1);
                                 if (consumo_temp > 0) {
@@ -378,7 +401,7 @@ void consultar_cliente(){
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -398,7 +421,7 @@ void consultar_cliente(){
             if(i<13){
                 partes[i] = linea.substr(start);
                 while(++i<13){
-                    partes[i] = "";
+                    partes[i] = "0";
                 }
             }
             if(partes[2] == to_string(cedula)){
@@ -418,35 +441,64 @@ void consultar_cliente(){
                     cin>>n;
                     switch(n){
                         case 1:
-                            cout<<"Tarjetas registradas: "<<endl;
+                            cout<<endl;
+                            cout<<"Tarjetas registradas de "<<partes[0]<<" "<<partes[1]<<":"<<endl;
                             cout<<"Numero de tarjeta principal: "<<partes[3]<<endl;
                             cout<<"Deuda de tarjeta principal: $"<<partes[11]<<endl;
                             if(partes[6] != "0"){
                                 cout<<"Numero de tarjeta adicional: "<<partes[6]<<endl;
                                 cout<<"Deuda de tarjeta adicional: $"<<partes[12]<<endl;
                             }
+                            cout<<endl;
+                            cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                            cin.ignore();
+                            cin.get();
+                            system("cls");
                             break;
                         case 2:
                             tarjeta_adicional_ingresada = true;
+                            if(partes[6]!="0"){
+                                cout<<"Ya existe una tarjeta adicional registrada, desea reemplazarla? (1: Si / 0: No): ";
+                                int opcion;
+                                cin>>opcion;
+                                if(opcion==0){
+                                    cout<<endl;
+                                    cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                                    cin.ignore();
+                                    cin.get();
+                                    system("cls");
+                                    break;
+                                }
+                            }
                             cout<<"Ingrese el numero de la tarjeta adicional: ";
                             cin>>tarjeta_adicional;
                             while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
-                                cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+                                cout<<"El numero de tarjeta debe tener 16 digitos, intentelo de nuevo: ";
                                 cin>>tarjeta_adicional;
                             }
                             cout<<"Ingrese el CVC de la tarjeta adicional: ";
                             cin>>cvc_adicional;    
                             while(cvc_adicional>=1000 || cvc_adicional<100){
-                                cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                                cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                                 cin>>cvc_adicional;
                             }
                             partes[6] = to_string(tarjeta_adicional);
                             partes[7] = to_string(cvc_adicional);
                             partes[8] = "2000";
                             cout<<"Tarjeta adicional ingresada con exito"<<endl;
+                            cout<<endl;
+                            cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                            cin.ignore();
+                            cin.get();
+                            system("cls");
                             break;
                         case 3:
                             usar_tarjeta();
+                            cout<<endl;
+                            cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                            cin.ignore();
+                            cin.get();
+                            system("cls");
                             break;
                         case 4:
                             cout<<"Regresando al menu principal";
@@ -500,13 +552,14 @@ void pagar_deudas(){
     cout<<"\n***********"<<endl;
     cout<<"PAGAR DEUDA"<<endl;
     cout<<"***********"<<endl;
-    int cvc, opcion, pago_minimo, monto, adeudado, pagar;
+    int cvc, opcion;
+    int pago_minimo, monto, adeudado, pagar;
     long long int cedula;
     bool encontrado = false, cvc_correcto=false;
     cout<<"Ingrese la cedula del cliente que va a pagar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -531,22 +584,25 @@ void pagar_deudas(){
             if(partes[2] == to_string(cedula)){
                 encontrado = true;
                 cout<<"Cedula encontrada "<<endl;
+                cout<<endl;
                 cout<<"Tarjeta principal: "<<partes[3]<<endl;
                 if(partes[6] != "0"){
                     cout<<"Tarjeta adicional: "<<partes[6]<<endl;
                 }
                 cout<<"Tutor de la tarjeta: "<<partes[0]<<" "<<partes[1]<<endl;
+                cout<<endl;
                 while(!cvc_correcto){
                     cout<<"Ingrese el CVC de la tarjeta a pagar: ";
                     cin>>cvc;
                     while(cvc>=1000 || cvc<100){
-                        cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                        cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                         cin>>cvc;
                     }
                 
                 if(partes[4]==to_string(cvc) || partes[7]== to_string(cvc)){
                     cvc_correcto=true;
                     if(partes[4] == to_string(cvc)){
+                    cout<<endl;
                     cout<<"Este CVC corresponde a la tarjeta principal"<<endl;
                     do{
                     cout<<"\n*****************************************"<<endl;
@@ -560,6 +616,10 @@ void pagar_deudas(){
                     cin>>opcion;
                         switch(opcion){
                         case 1:
+                            if(partes[11]=="0"){
+                                cout<<"No hay deuda pendiente"<<endl;
+                                break;
+                            }
                             cout<<"Pagando la totalidad de la deuda mensual";
                             for(int i=0;i<4;i++){
                                 sleep(1.5);
@@ -569,12 +629,28 @@ void pagar_deudas(){
                             partes[5] = "2000";
                             cout<<endl;
                             cout<<"Pago realizado con exito"<<endl;
+                            sleep(1);
+                            cout<<"Restaurando limite de credito";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
+                            cout<<endl;
+                            cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                            cin.ignore();
+                            cin.get();
+                            system("cls");
                             break;
                         case 2:
+                            if(partes[11]=="0"){
+                                cout<<"No hay deuda pendiente"<<endl;
+                                break;
+                            }
                             pago_minimo=stoi(partes[11])*0.05;
                             cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
+                            cout<<endl;
                             if(monto<pago_minimo){
                                 cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[11])-monto;
@@ -591,15 +667,21 @@ void pagar_deudas(){
                                     sleep(1.5);
                                     cout<<".";
                                 }
-                                cout<<endl;
+                                cout<<""<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde que ha entrado a buro de credito, su historial crediticio se vera afectado"<<endl;
                                 partes[11]=to_string(pagar);
                                 partes[5]="2000";
+                                cout<<endl;
+                                cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                                cin.ignore();
+                                cin.get();
+                                system("cls");
                             }else{
                                 cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[11])-monto;
                                 pagar=adeudado+adeudado*0.0232;
+                                cout<<endl;
                                 cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
@@ -612,11 +694,16 @@ void pagar_deudas(){
                                     sleep(1.5);
                                     cout<<".";
                                 }
-                                cout<<endl;
+                                cout<<""<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde pagar al banco puntualmente"<<endl;
                                 partes[11]=to_string(pagar);
                                 partes[5]="2000";
+                                cout<<endl;
+                                cout<<"Ingrese cualquier tecla para continuar"<<endl;
+                                cin.ignore();
+                                cin.get();
+                                system("cls");
                             }
                             break;
                         case 3:
@@ -650,6 +737,10 @@ void pagar_deudas(){
                     cin>>opcion;
                         switch(opcion){
                         case 1:
+                            if(partes[12]=="0"){
+                                cout<<"No hay deuda pendiente"<<endl;
+                                break;
+                            }
                             cout<<"Pagando la totalidad de la deuda mensual";
                             for(int i=0;i<4;i++){
                                 sleep(1.5);
@@ -657,16 +748,30 @@ void pagar_deudas(){
                             }
                             partes[12] = "0";
                             partes[8] = "2000";
+                            cout<<endl;
+                            cout<<"Pago realizado con exito"<<endl;
+                            sleep(1);
+                            cout<<"Restaurando limite de credito";
+                            for(int i=0;i<4;i++){
+                                sleep(1.5);
+                                cout<<".";
+                            }
                             break;
                         case 2:
+                            if(partes[12]=="0"){
+                                cout<<"No hay deuda pendiente"<<endl;
+                                break;
+                            }
                             pago_minimo=stoi(partes[12])*0.05;
                             cout<<"El pago minimo de la deuda mensual es: $"<<pago_minimo<<endl;
                             cout<<"Ingrese el monto a pagar (Si el monto es menor al pago minimo entra a buro de credito): ";
                             cin>>monto;
+                            cout<<endl;
                             if(monto<pago_minimo){
                                 cout<<"El monto ingresado es menor al pago minimo, entra a buro de credito"<<endl;
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.025;
+                                cout<<endl;
                                 cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
@@ -678,6 +783,7 @@ void pagar_deudas(){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<""<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde que ha entrado a buro de credito, su historial crediticio se vera afectado"<<endl;
                                 partes[12]=to_string(pagar);
@@ -686,6 +792,7 @@ void pagar_deudas(){
                                 cout<<"El monto ingresado es mayor o igual al pago minimo, NO entra a buro de credito";
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.0232;
+                                cout<<endl;
                                 cout<<"Pagando monto ingresado";
                                 for(int i=0;i<4;i++){
                                     sleep(1.5);
@@ -698,6 +805,7 @@ void pagar_deudas(){
                                     sleep(1.5);
                                     cout<<".";
                                 }
+                                cout<<""<<endl;
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
                                 cout<<"Recuerde pagar al banco puntualmente"<<endl;
                                 partes[12]=to_string(pagar);
@@ -705,6 +813,7 @@ void pagar_deudas(){
                             }
                             break;
                         case 3:
+                            cout<<"Cambios guardados"<<endl;
                             cout<<"Regresando al menu principal";
                             for(int i=0;i<4;i++){
                                 sleep(1.5);
@@ -775,10 +884,10 @@ void actualizar_datos(string campo, int campo_num){
     bool encontrado = false;
     string linea, reemplazar;
     long long int cedula;
-    cout << "Ingrese la cedula del cliente del cual se quieren actualizar los datos: ";
+    cout << "Ingrese la cedula del cliente para actualizacion de datos: ";
     cin >> cedula;
     while (cedula <= 100000000 || cedula >= 2500000000){
-        cout << "El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout << "El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin >> cedula;
         cout << endl;
     }
@@ -790,38 +899,38 @@ void actualizar_datos(string campo, int campo_num){
         while (getline(archivo, linea)){
             size_t pos = linea.find(to_string(cedula));
             if (pos != string::npos){
-            cin.ignore();                
-            cout << "Ingrese " << campo << " a actualizar: ";
-            getline(cin, reemplazar);
-            encontrado = true;
-            string partes[13];
-            size_t start = 0, end = 0;
-            for (int i = 0; i < 13; i++) {
-                end = linea.find(';', start);
-                if (end == string::npos) {
-                partes[i] = linea.substr(start);
-                while (++i < 13) {
-                    partes[i] = "";
+                cin.ignore();                
+                cout << "Ingrese " << campo <<":";
+                getline(cin, reemplazar);
+                encontrado = true;
+                string partes[13];
+                size_t start = 0, end = 0;
+                for (int i = 0; i < 13; i++) {
+                    end = linea.find(';', start);
+                    if (end == string::npos) {
+                        partes[i] = linea.substr(start);
+                        while (++i < 13) {
+                            partes[i] = "0";
+                        }
+                        break;
+                    }
+                    partes[i] = linea.substr(start, end - start);
+                    start = end + 1;
                 }
-                break;
+                partes[campo_num] = reemplazar;
+                linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6] + ";" + partes[7] + ";" + partes[8] + ";" + partes[9] + ";" + partes[10] + ";" + partes[11] + ";" + partes[12];
             }
-            partes[i] = linea.substr(start, end - start);
-            start = end + 1;
-            }
-            partes[campo_num] = reemplazar;
-            linea = partes[0] + ";" + partes[1] + ";" + partes[2] + ";" + partes[3] + ";" + partes[4] + ";" + partes[5] + ";" + partes[6] + ";" + partes[7] + ";" + partes[8] + ";" + partes[9] + ";" + partes[10] + ";" + partes[11] + ";" + partes[12];
-          }
-          archivo_temp << linea << endl;
+            archivo_temp << linea << endl;
         }
         if (encontrado){
-            cout << "El dato ha sido actualizado con exito" << endl;
-            cout << "Regresando al menu principal";
-            for (int i = 0; i < 4; i++){
-                sleep(1.5);
-                cout << ".";
-            }
+            cout << "El dato ha sido actualizado con exito";
         } else {
-            cout << "No se encontro el cliente" << endl;
+            cout << "No se encontro el cliente, intentelo de nuevo";
+        }
+        
+        for (int i = 0; i < 4; i++){
+            sleep(1.5);
+            cout << ".";
         }
     } else {
         cout << "Error al abrir el archivo" << endl;
@@ -830,15 +939,16 @@ void actualizar_datos(string campo, int campo_num){
     archivo.close();
     archivo_temp.close();
     ifstream archivo_temp_final("temp.csv");
-    ofstream archivo_final("CRUD.csv", ios::trunc);  // Abre el archivo original en modo truncado
+    ofstream archivo_final("CRUD.csv", ios::trunc);
     if (archivo_temp_final.is_open() && archivo_final.is_open()) {
-        archivo_final << archivo_temp_final.rdbuf();  // Copia todo el contenido
+        archivo_final << archivo_temp_final.rdbuf();
         archivo_temp_final.close();
         archivo_final.close();
-        remove("temp.csv");  // Elimina el archivo temporal
+        remove("temp.csv");
     } else {
         cout << "Error al abrir los archivos para la actualización final" << endl;
     }
+    system("cls");
 }
 
 // Switch Actualizar Datos
@@ -848,27 +958,27 @@ void switch_actualizar_datos(){
     cout << "**************************" << endl;
     cout << "INGRESO A ACTUALIZAR DATOS" << endl;
     cout << "**************************" << endl;
-    cout << "Seleccione el dato que desea actualizar: " << endl;
+    cout << "Seleccione el campo que desea actualizar: " << endl;
     n = imprimir_opciones("Actualizar nombres", "Actualizar apellidos", "Actualizar cedula", "Actualizar numero de tarjeta", "Actualizar CVC","6. Salir al menu principal");
         switch (n){
         case 1:
-            actualizar_datos("el nombre", 0);
+            actualizar_datos("los nuevos nombres", 0);
             system("cls");
             break;
         case 2:
-            actualizar_datos("los apellidos", 1);
+            actualizar_datos("los nuevos apellidos", 1);
             system("cls");
             break;
         case 3:
-            actualizar_datos("la cedula", 2);
+            actualizar_datos("la nueva cedula", 2);
             system("cls");
             break;
         case 4:
-            actualizar_datos("el numero de tarjeta", 3);
+            actualizar_datos("el nuevo numero de tarjeta", 3);
             system("cls");
             break;
         case 5:
-            actualizar_datos("el CVC (codigo de seguridad)", 4);
+            actualizar_datos("el nuevo CVC (codigo de seguridad)", 4);
             system("cls");
             break;
         case 6:
@@ -896,7 +1006,7 @@ void eliminar_cliente(){
     cout<<"(Se borraran todos los datos adjuntos al cliente)"<<endl;
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -905,22 +1015,32 @@ void eliminar_cliente(){
 
     if(archivo.is_open() && archivo_temp.is_open()){
         string linea;
+        bool encontrado = false;
         while(getline(archivo, linea)){
-            if(linea.find(to_string(cedula))==string::npos){ //si NO se encuentra la cedula en el archivo original esta NO se copia al archivo temporal que pasa a ser el original
+            if(linea.find(to_string(cedula))==string::npos){
                 archivo_temp<<linea<<endl;
+            } else {
+                encontrado = true;
             }
         }
         archivo.close();
         archivo_temp.close();
-        remove("CRUD.csv");
-        rename("temp.csv","CRUD.csv");
-        cout<<"Datos del cliente eliminados con exito "<<endl;
+        
+        if(encontrado) {
+            remove("CRUD.csv");
+            rename("temp.csv","CRUD.csv");
+            cout<<"Datos del cliente eliminados con exito "<<endl;
+        } else {
+            remove("temp.csv");
+            cout<<"No se encontro al cliente con la cedula proporcionada"<<endl;
+        }
+        
         cout << "Regresando al menu principal";
-            for(int i=0;i<4;i++){
-                sleep(1.5);
-                cout<<".";
-            }
-            system("cls");
+        for(int i=0;i<4;i++){
+            sleep(1.5);
+            cout<<".";
+        }
+        system("cls");
     }else{
         cout<<"Error al abrir los archivos"<<endl;
         exit(1);
@@ -964,6 +1084,8 @@ void menu(){
             break;
         default:
             cout<<"Opcion no valida"<<endl;
+            sleep(1.2);
+            system("cls");
             break;
         }
     } while (n!=6);

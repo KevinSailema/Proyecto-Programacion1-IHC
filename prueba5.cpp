@@ -43,20 +43,20 @@ void ingreso_cliente(){
         cout<<"Ingrese su numero de cedula: ";
         cin>>cedula;
         while(cedula<=100000000||cedula>=2500000000){
-            cout<<"Número de cedula incorrecto, ingrese nuevamente: ";
+            cout<<"numero de cedula incorrecto, ingrese nuevamente: ";
             cin>>cedula;
             cout<<endl;
         }
-        cout<<"Ingrese el número de la tarjeta: ";
+        cout<<"Ingrese el numero de la tarjeta: ";
         cin>>numero_tarjeta;
         while(numero_tarjeta<=1000000000000000||numero_tarjeta>=10000000000000000){
-            cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+            cout<<"El numero de tarjeta debe tener 16 digitos, intentelo de nuevo: ";
             cin>>numero_tarjeta;
         }
         cout<<"Ingrese el CVC de la tarjeta: ";
         cin>>cvc;
         while (cvc>=1000 || cvc<100){
-            cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+            cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
             cin>>cvc;
         }
         archivo << nombres << ";" << apellidos << ";" << cedula << ";" 
@@ -118,7 +118,7 @@ int calcular_consumos(int descuento, int limite_descuento, int limite_credito){
         cout<<"A cuantos meses desea diferir? (1-3): ";
         cin>>meses;
         while(meses<1 || meses>3){
-            cout<<"El número de meses debe ser entre 1 y 3, intentelo de nuevo: ";
+            cout<<"El numero de meses debe ser entre 1 y 3, intentelo de nuevo: ";
             cin>>meses;
         }
         consumo = consumo/meses;
@@ -147,7 +147,7 @@ void usar_tarjeta() {
     cout<<"Ingrese la cedula del tutor de la/las tarjetas: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, intentelo de nuevo: ";
+        cout<<"El numero de cedula debe tener diez digitos, intentelo de nuevo: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -181,7 +181,7 @@ void usar_tarjeta() {
                     cout << "Ingrese el CVC de la tarjeta a usar: ";
                     cin >> cvc;
                     while (cvc >= 1000 || cvc < 100) {
-                        cout << "El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                        cout << "El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                         cin >> cvc;
                     }
                     if (partes[4] == to_string(cvc) || partes[7] == to_string(cvc)) { // si el cvc es igual al ingresado
@@ -375,7 +375,7 @@ void consultar_cliente(){
     cout<<"Ingrese la cedula del cliente a consultar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -427,13 +427,13 @@ void consultar_cliente(){
                             cout<<"Ingrese el numero de la tarjeta adicional: ";
                             cin>>tarjeta_adicional;
                             while(tarjeta_adicional<=1000000000000000||tarjeta_adicional>=10000000000000000){
-                                cout<<"El número de tarjeta debe tener 16 dígitos, intentelo de nuevo: ";
+                                cout<<"El numero de tarjeta debe tener 16 digitos, intentelo de nuevo: ";
                                 cin>>tarjeta_adicional;
                             }
                             cout<<"Ingrese el CVC de la tarjeta adicional: ";
                             cin>>cvc_adicional;    
                             while(cvc_adicional>=1000 || cvc_adicional<100){
-                                cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                                cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                                 cin>>cvc_adicional;
                             }
                             partes[6] = to_string(tarjeta_adicional);
@@ -500,7 +500,7 @@ void pagar_deudas(){
     cout<<"Ingrese la cedula del cliente que va a pagar: ";
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
@@ -534,7 +534,7 @@ void pagar_deudas(){
                     cout<<"Ingrese el CVC de la tarjeta a pagar: ";
                     cin>>cvc;
                     while(cvc>=1000 || cvc<100){
-                        cout<<"El CVC debe tener al menos tres dígitos, intentelo de nuevo: ";
+                        cout<<"El CVC debe tener al menos tres digitos, intentelo de nuevo: ";
                         cin>>cvc;
                     }
                 
@@ -772,7 +772,7 @@ void actualizar_datos(string campo, int campo_num){
     cout << "Ingrese la cedula del cliente del cual se quieren actualizar los datos: ";
     cin >> cedula;
     while (cedula <= 100000000 || cedula >= 2500000000){
-        cout << "El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout << "El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin >> cedula;
         cout << endl;
     }
@@ -882,7 +882,7 @@ void eliminar_cliente(){
     cout<<"(Se borraran todos los datos adjuntos al cliente)"<<endl;
     cin>>cedula;
     while(cedula<=100000000||cedula>=2500000000){
-        cout<<"El número de cedula debe tener diez dígitos, ingrese nuevamente: ";
+        cout<<"El numero de cedula debe tener diez digitos, ingrese nuevamente: ";
         cin>>cedula;
         cout<<endl;
     }
