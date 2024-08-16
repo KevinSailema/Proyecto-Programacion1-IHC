@@ -224,7 +224,7 @@ void usar_tarjeta() {
                                 case 4:
                                     cout << "Regresando al menu principal";
                                     for (int i = 0; i < 4; i++) {
-                                        sleep(1.5);
+                                        sleep(1);
                                         cout << ".";
                                     }
                                     system("cls");
@@ -283,7 +283,7 @@ void usar_tarjeta() {
                                         case 4:
                                             cout << "Regresando al menu principal";
                                             for (int i = 0; i < 4; i++) {
-                                                sleep(1.5);
+                                                sleep(1);
                                                 cout << ".";
                                             }
                                             system("cls");
@@ -350,8 +350,8 @@ void usar_tarjeta() {
     }
     if(!encontrado){
         cout<<"Cliente no encontrado, regresando al menu principal";
-        for(int i=0;i<4;i++){
-            sleep(1.5);
+        for(int i=0;i<3;i++){
+            sleep(1);
             cout<<".";
         }
         system("cls");
@@ -359,7 +359,7 @@ void usar_tarjeta() {
     if (!cvc_correcto) { // si no se encuentra la tarjeta
         cout << "Tarjeta no encontrada, regresando";
         for (int i = 0; i < 4; i++) {
-            sleep(1.5);
+            sleep(1);
             cout << ".";
         }
         system("cls");
@@ -450,8 +450,8 @@ void consultar_cliente(){
                             break;
                         case 4:
                             cout<<"Regresando al menu principal";
-                            for(int i=0;i<4;i++){
-                                sleep(1.5);
+                            for(int i=0;i<3;i++){
+                                sleep(1);
                                 cout<<".";
                             }
                             system("cls");
@@ -468,8 +468,8 @@ void consultar_cliente(){
         }
         if(!encontrado){ // Si no encuentra la cedula, imprime que no se encontró
             cout<<"Cliente no encontrado, regresando al menu principal";
-            for(int i=0;i<4;i++){
-                sleep(1.5);
+            for(int i=0;i<3;i++){
+                sleep(1);
                 cout<<".";
             }
             system("cls");
@@ -561,8 +561,8 @@ void pagar_deudas(){
                         switch(opcion){
                         case 1:
                             cout<<"Pagando la totalidad de la deuda mensual";
-                            for(int i=0;i<4;i++){
-                                sleep(1.5);
+                            for(int i=0;i<3;i++){
+                                sleep(1);
                                 cout<<".";
                             }
                             partes[11] = "0";
@@ -580,15 +580,15 @@ void pagar_deudas(){
                                 adeudado=stoi(partes[11])-monto;
                                 pagar=adeudado+adeudado*0.025;
                                 cout<<"Pagando monto ingresado";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
                                 cout<<"Calculando nueva deuda con intereses";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<endl;
@@ -601,15 +601,15 @@ void pagar_deudas(){
                                 adeudado=stoi(partes[11])-monto;
                                 pagar=adeudado+adeudado*0.0232;
                                 cout<<"Pagando monto ingresado";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
                                 cout<<"Calculando nueva deuda con intereses";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<endl;
@@ -621,8 +621,8 @@ void pagar_deudas(){
                             break;
                         case 3:
                             cout<<"Regresando al menu principal";
-                            for(int i=0;i<4;i++){
-                                sleep(1.5);
+                            for(int i=0;i<3;i++){
+                                sleep(1);
                                 cout<<".";
                             }
                             system("cls");
@@ -651,8 +651,8 @@ void pagar_deudas(){
                         switch(opcion){
                         case 1:
                             cout<<"Pagando la totalidad de la deuda mensual";
-                            for(int i=0;i<4;i++){
-                                sleep(1.5);
+                            for(int i=0;i<3;i++){
+                                sleep(1);
                                 cout<<".";
                             }
                             partes[12] = "0";
@@ -668,14 +668,14 @@ void pagar_deudas(){
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.025;
                                 cout<<"Pagando monto ingresado";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<"Pago realizado con exito"<<endl;
                                 cout<<"Calculando nueva deuda con intereses";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
@@ -687,15 +687,15 @@ void pagar_deudas(){
                                 adeudado=stoi(partes[12])-monto;
                                 pagar=adeudado+adeudado*0.0232;
                                 cout<<"Pagando monto ingresado";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<endl;
                                 cout<<"Pago realizado con exito"<<endl;
                                 cout<<"Calculando nueva deuda con intereses";
-                                for(int i=0;i<4;i++){
-                                    sleep(1.5);
+                                for(int i=0;i<3;i++){
+                                    sleep(1);
                                     cout<<".";
                                 }
                                 cout<<"La nueva deuda es de: $"<<pagar<<endl;
@@ -706,8 +706,8 @@ void pagar_deudas(){
                             break;
                         case 3:
                             cout<<"Regresando al menu principal";
-                            for(int i=0;i<4;i++){
-                                sleep(1.5);
+                            for(int i=0;i<3;i++){
+                                sleep(1);
                                 cout<<".";
                             }
                             system("cls");
@@ -722,8 +722,8 @@ void pagar_deudas(){
                     }else{
                         cout<<"Este CVC no corresponde a ninguna tarjeta registrada"<<endl;
                         cout<<"Regresando al menu principal";
-                        for(int i=0;i<4;i++){
-                            sleep(1.5);
+                        for(int i=0;i<3;i++){
+                            sleep(1);
                             cout<<".";
                         }
                         system("cls");
@@ -762,8 +762,8 @@ void pagar_deudas(){
     }
     if(!encontrado){
         cout<<"Cliente no encontrado, regresando al menu principal";
-        for(int i=0;i<4;i++){
-            sleep(1.5);
+        for(int i=0;i<3;i++){
+            sleep(1);
             cout<<".";
         }
         system("cls");
@@ -817,7 +817,7 @@ void actualizar_datos(string campo, int campo_num){
             cout << "El dato ha sido actualizado con exito" << endl;
             cout << "Regresando al menu principal";
             for (int i = 0; i < 4; i++){
-                sleep(1.5);
+                sleep(1);
                 cout << ".";
             }
         } else {
@@ -873,8 +873,8 @@ void switch_actualizar_datos(){
             break;
         case 6:
             cout << "Regresando al menu principal";
-            for(int i=0;i<4;i++){
-                sleep(1.5);
+            for(int i=0;i<3;i++){
+                sleep(1);
                 cout<<".";
             }
             system("cls");
@@ -916,8 +916,8 @@ void eliminar_cliente(){
         rename("temp.csv","CRUD.csv");
         cout<<"Datos del cliente eliminados con exito "<<endl;
         cout << "Regresando al menu principal";
-            for(int i=0;i<4;i++){
-                sleep(1.5);
+            for(int i=0;i<3;i++){
+                sleep(1);
                 cout<<".";
             }
             system("cls");
